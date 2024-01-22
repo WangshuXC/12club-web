@@ -1,61 +1,63 @@
 <template>
-    <el-menu :default-active="getCurrentMenuUrl()" class="el-menu" mode="horizontal" router="false" menu-trigger="hover"
-        :ellipsis="false" unique-opened>
-        <el-menu-item index="/">首页</el-menu-item>
-
-        <el-input v-model="searchText" class="search" size="large" placeholder="输入关键字进行搜索..." />
-
-        <div class="flex-grow" />
-        <el-sub-menu index="anime">
-            <template #title>动漫</template>
-            <el-menu-item index="/anime">国漫</el-menu-item>
-            <el-menu-item index="/anime">日漫</el-menu-item>
-        </el-sub-menu>
-        <el-menu-item index="/comic">漫画</el-menu-item>
-        <el-menu-item index="/novel">小说</el-menu-item>
-        <el-sub-menu index="about">
-            <template #title>关于</template>
-            <el-menu-item index="/about">网站简介</el-menu-item>
-
-            <el-popover placement="left" :width="200" trigger="hover">
-                <template #reference>
-                    <el-menu-item>加入我们</el-menu-item>
-                </template>
-                <p>QQ群：973304356</p>
-                <el-image style="width: 100%; height: 100%" :src="imageUrl" :fit="contain" />
-            </el-popover>
-
-        </el-sub-menu>
-    </el-menu>
+    <div class="navbar">
+        <div class="logo">logo</div>
+        <div class="navbar-index">
+            <a href="/">首页</a>
+            <a href="/anime">动漫</a>
+            <a href="/comic">漫画</a>
+            <a href="/novel">小说</a>
+            <a href="/music">音乐</a>
+        </div>
+        <input type="text" id='searchText' placeholder="请输入搜索内容" onfocus="this.placeholder=''"
+            onblur="this.placeholder='请输入搜索内容'">
+        <div class="history">历史</div>
+    </div>
 </template>
 
 <script>
-import qqImage from '@/assets/imgs/qq.jpg';
 export default {
     data() {
         return {
             searchText: '',
-            imageUrl: qqImage,
-        };
+        }
     },
     methods: {
-        getCurrentMenuUrl() {
-            return this.$route.path;
-        },
-    },
-};
+    }
+}
 </script>
 
 <style>
-.flex-grow {
-    flex-grow: 1;
+.navbar {
+    display: flex;
+    height: 8vh;
+    background-image: linear-gradient(#191825, #ffffff00);
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-around;
+    align-items: center;
 }
 
-.search {
-    max-width: 50%;
-    min-width: 35%;
-    margin-left: 20%;
-    margin-right: 10%;
-    margin-bottom: 10px;
+.navbar-index {
+    display: flex;
+}
+
+.navbar-index a {
+    margin-inline: 20px;
+}
+
+.navbar input[type="text"] {
+    margin-right: 10px;
+    padding: 5px;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    transition: font-size 0.5s ease;
+
+    background-color: #00000060;
+}
+
+a {
+    color: #000;
+    text-decoration: none;
 }
 </style>

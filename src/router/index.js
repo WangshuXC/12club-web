@@ -44,6 +44,14 @@ const router = createRouter({
       },
     },
     {
+      path: '/music',
+      name: 'music',
+      component: () => import('../views/MusicView.vue'),
+      meta: {
+        showNavBar: false
+      },
+    },
+    {
       path: '/about',
       name: 'about',
       component: () => import('../views/AboutView.vue'),
