@@ -30,11 +30,12 @@ export default {
 .navbar {
     display: flex;
     height: 8vh;
-    background-image: linear-gradient(#191825, #ffffff00);
+    background-image: linear-gradient(#f2faff9a, #ffffff00);
     flex-direction: row;
     flex-wrap: nowrap;
     justify-content: space-around;
     align-items: center;
+    color: #ffffff;
 }
 
 .navbar-index {
@@ -57,7 +58,7 @@ export default {
 }
 
 a {
-    color: #000;
+    color: #ffffff;
     text-decoration: none;
 }
 </style>

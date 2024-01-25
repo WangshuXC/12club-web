@@ -1,13 +1,19 @@
 import './assets/css/main.css'
 
 import { createApp } from 'vue'
-import ElementPlus from 'element-plus';
-import 'element-plus/dist/index.css';
 import App from './App.vue'
 import router from './router'
+import 'vuetify/styles'
+import { createVuetify } from 'vuetify'
+import * as components from 'vuetify/components'
+import * as directives from 'vuetify/directives'
 
 const app = createApp(App)
+const vuetify = createVuetify({
+    components,
+    directives,
+  })
 
 app.use(router)
-app.use(ElementPlus, { size: 'small', zIndex: 3000 })
+app.use(vuetify)
 app.mount('#app')
