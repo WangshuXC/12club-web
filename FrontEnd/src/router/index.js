@@ -24,7 +24,7 @@ const router = createRouter({
       name: 'animeplay',
       component: () => import('../views/AnimePlay.vue'),
       meta: {
-        showNavBar: true
+        showNavBar: false
       },
     },
     {
