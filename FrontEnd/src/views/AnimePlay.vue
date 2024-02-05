@@ -35,8 +35,8 @@ export default {
 .video-player {
     margin-top: 10vh;
     margin-left: 5%;
-    width: 80vw;
-    height: 75vh;
+    width: 70vw;
+    height: 70vh;
     display: flex;
 }
 </style>

@@ -35,7 +35,7 @@ export default {
     flex-wrap: nowrap;
     justify-content: space-around;
     align-items: center;
-    color: #ffffff;
+    color: #000000;
 }
 
 .navbar-index {
@@ -58,7 +58,7 @@ export default {
 }
 
 a {
-    color: #ffffff;
+    color: #000000;
     text-decoration: none;
 }
 </style>

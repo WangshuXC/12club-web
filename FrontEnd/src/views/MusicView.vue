@@ -98,7 +98,7 @@ export default {
             prevVolume: 100,
             progress: 0,
             thumbSize: 0,
-            audioSrc: "http://ws.stream.qqmusic.qq.com/O8000032wpIs0D30HZ.ogg?guid=0&vkey=47EF1FB7FDC25085AA8772E2DBABAB2E1A0BD85F2B3910F2A41AF32E53052B391206F43C12BF0CCBE5B6ABB92E65DDF4D6D4A294D002F0EE&uin=2965422689&fromtag=119780&src=O8000042eWYv0a3Qi2.ogg",
+            audioSrc: "http://127.0.0.1:3000/music/%E4%B8%8D%E7%9C%A0%E4%B9%8B%E5%A4%9C/%E5%BC%A0%E6%9D%B0&HOYO-MiX%20-%20%E4%B8%8D%E7%9C%A0%E4%B9%8B%E5%A4%9C.mp3",
             audioElement: null,
             title: '不眠之夜',
             author: '张杰/HOYO-MiX',
@@ -106,6 +106,7 @@ export default {
             totalTime: '00:00',
             lrcData: [],
             currentIndex: 0,
+            lrc: `[00:00.00]作词 Lyricist：李崎/往人不识\n[00:06.72]作曲 Composer：王可鑫 Eli.W (HOYO-MiX)\n[00:08.11]编曲 Arranger：崔瀚普TSAR (HOYO-MiX)\n[00:09.58]制作人 Producer：崔瀚普TSAR (HOYO-MiX)\n[00:15.74]车窗外 这夜色 流光溢彩\n[00:19.58]别忘了 闭上眼 才算醒来\n[00:23.57]你参演 这场戏 变换姿态\n[00:27.50]谜底 结局 我该 怎么猜\n[00:32.49]记忆是梦的开场白\n[00:36.08]（伤疤被掩盖 昨日还在）\n[00:40.44]时间在静候你醒来\n[00:46.76]（Take me away）\n[00:48.01]别再破碎 别再枯萎\n[00:51.76]继续沉醉 自我迂回\n[00:55.64]最后品味 永恒的滋味\n[00:58.98]下一场那夜的梦 再相会\n[01:03.92]越是虚伪 越是完美\n[01:07.77]美梦入睡 绝望轮回\n[01:11.74]一闭一睁 便开始倒退\n[01:14.94]下一场那夜的梦 再相会\n[01:24.13]（伏笔没解开 悬念还在）\n[01:28.37]时间在静候你醒来\n[01:34.86]（Sing with me）\n[01:36.00]别再破碎 别再枯萎\n[01:39.74]继续沉醉 自我迂回\n[01:43.74]最后品味 永恒的滋味\n[01:46.97]来一场不眠之夜 作结尾\n[01:52.05]越要快乐 越要破溃\n[01:55.76]是是非非 别再意会\n[01:59.75]忘记时间 来梦的派对\n[02:02.99]来一场不眠之夜 作结尾\n[02:08.16]人声 Vocal Artist：张杰\n[02:09.02]小号/富鲁格号 Trumpet/Flugelhorn：夏非\n[02:09.34]长号 Trombone：曹侃\n[02:09.51]录音棚 Recording Studio：未来•福录音室FUTURE•LIVE STUDIO/升赫录音棚Soundhub Studio\n[02:10.26]录音师 Recording Engineer：吴身宝 Bob Wu@Soundhub Studios/Kevin刘瀚文@Soundhub Studios\n[02:10.79]混音师 Mixing Engineer：崔瀚普TSAR (HOYO-MiX)\n[02:11.12]母带制作 Mastering Engineer：崔瀚普TSAR (HOYO-MiX)\n[02:12.20]出品 Produced by：HOYO-MiX`,
             albumCover: 'https://y.qq.com/music/photo_new/T002R800x800M000004ItRwk3R0LYz.jpg'
         };
     },
@@ -113,10 +114,7 @@ export default {
         FontAwesomeIcon,
     },
     mounted() {
-        //写music-play用，记得删
-        this.max();
         this.parseLRC();
-        // this.setLrcListPosition();
         this.audioElement = this.$refs.audioPlayer;
         this.audioElement.autoplay = this.isPlaying;
         this.audioElement.addEventListener("timeupdate", this.handleTimeUpdate);
@@ -232,15 +230,13 @@ export default {
             return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
         },
         parseLRC() {
-            const lrc = `[00:00.00]作词 Lyricist：李崎/往人不识\n[00:06.72]作曲 Composer：王可鑫 Eli.W (HOYO-MiX)\n[00:08.11]编曲 Arranger：崔瀚普TSAR (HOYO-MiX)\n[00:09.58]制作人 Producer：崔瀚普TSAR (HOYO-MiX)\n[00:15.74]车窗外 这夜色 流光溢彩\n[00:19.58]别忘了 闭上眼 才算醒来\n[00:23.57]你参演 这场戏 变换姿态\n[00:27.50]谜底 结局 我该 怎么猜\n[00:32.49]记忆是梦的开场白\n[00:36.08]（伤疤被掩盖 昨日还在）\n[00:40.44]时间在静候你醒来\n[00:46.76]（Take me away）\n[00:48.01]别再破碎 别再枯萎\n[00:51.76]继续沉醉 自我迂回\n[00:55.64]最后品味 永恒的滋味\n[00:58.98]下一场那夜的梦 再相会\n[01:03.92]越是虚伪 越是完美\n[01:07.77]美梦入睡 绝望轮回\n[01:11.74]一闭一睁 便开始倒退\n[01:14.94]下一场那夜的梦 再相会\n[01:24.13]（伏笔没解开 悬念还在）\n[01:28.37]时间在静候你醒来\n[01:34.86]（Sing with me）\n[01:36.00]别再破碎 别再枯萎\n[01:39.74]继续沉醉 自我迂回\n[01:43.74]最后品味 永恒的滋味\n[01:46.97]来一场不眠之夜 作结尾\n[01:52.05]越要快乐 越要破溃\n[01:55.76]是是非非 别再意会\n[01:59.75]忘记时间 来梦的派对\n[02:02.99]来一场不眠之夜 作结尾\n[02:08.16]人声 Vocal Artist：张杰\n[02:09.02]小号/富鲁格号 Trumpet/Flugelhorn：夏非\n[02:09.34]长号 Trombone：曹侃\n[02:09.51]录音棚 Recording Studio：未来•福录音室FUTURE•LIVE STUDIO/升赫录音棚Soundhub Studio\n[02:10.26]录音师 Recording Engineer：吴身宝 Bob Wu@Soundhub Studios/Kevin刘瀚文@Soundhub Studios\n[02:10.79]混音师 Mixing Engineer：崔瀚普TSAR (HOYO-MiX)\n[02:11.12]母带制作 Mastering Engineer：崔瀚普TSAR (HOYO-MiX)\n[02:12.20]出品 Produced by：HOYO-MiX`
-
             function parseTime(timer) {
                 let t = timer.split(":");
                 let result = Number(t[0]) * 60 + Number(t[1]);
                 return result;
             }
 
-            let lines = lrc.split('\n');
+            let lines = this.lrc.split('\n');
             let lrcArr = [];
             lines.forEach(item => {
                 let result = item.trim().replace(/^\[/, "");
