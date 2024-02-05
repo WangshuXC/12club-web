@@ -16,3 +16,4 @@ class Anime(db.Model):
     update_date = db.Column(db.DateTime, nullable=False, onupdate=db.func.current_timestamp())
     view_count = db.Column(db.Integer, default=0, nullable=False)
     download_count = db.Column(db.Integer, default=0, nullable=False)
+    cover = db.Column(db.String(255))

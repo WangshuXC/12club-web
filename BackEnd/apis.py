@@ -2,13 +2,14 @@ from flask import request
 from flask_restful import Resource
 from models import User,Anime
 from settings import db
+import math
 
 class HomeApi(Resource):
     def get(self):
         return {'message': 'Hello, World!'}
 
 class AnimeApi(Resource):
-    def get(self, anime_id=None):
+    def get(self, anime_id=None, animepage_id=None):
         if anime_id:
             # 根据 ID 获取特定的动漫信息
             anime = Anime.query.get(anime_id)
@@ -26,6 +27,22 @@ class AnimeApi(Resource):
                 }
             else:
                 return {'message': 'Anime not found'}, 404
+        elif animepage_id:
+            # 计算offset值
+            items_per_page = 20
+            offset = (int(animepage_id) - 1) * items_per_page
+            # 查询指定范围内的动漫数据
+            anime_page_list = Anime.query.offset(offset).limit(items_per_page).all()
+            anime_count = Anime.query.count()
+            total_page=math.ceil(anime_count/items_per_page)
+            # 将查询结果转换成字典列表
+            results = [{
+                'id': anime.id,
+                'title': anime.title,
+                'cover':anime.cover,
+            } for anime in anime_page_list]
+            result={'total_page':total_page,'results':results}
+            return result,200
         else:
             # 返回表内所有的动漫信息
             anime_list = Anime.query.all()

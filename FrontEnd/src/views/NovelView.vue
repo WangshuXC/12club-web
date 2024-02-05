@@ -1,12 +1,12 @@
 <template>
-    <div class="novel-container">
+    <div class="anime-container">
         <div class="sort-bar"></div>
-        <div class="novel-list">
-            <div v-for="(item, index) in novelList" :key="index" class="novel-box">
-                <div class="novel-img" :style="{ 'background-image': 'url(' + item.img + ')' }">
+        <div class="bangumi-list">
+            <div v-for="(item, index) in bangumiList" :key="index" class="bangumi-box">
+                <div class="bangumi-img" :style="{ 'background-image': 'url(' + item.img + ')' }">
 
                 </div>
-                <div class="novel-info">
+                <div class="bangumi-info">
                     {{ item.name }}
                 </div>
             </div>
@@ -22,40 +22,40 @@ export default {
         return {
             page: 4,
             pageNum: 10,
-            novelList: [
+            bangumiList: [
                 {
                     img: 'https://cdn.yinghuacdn.top/upload/vod/20240120-1/4ff041d9f3d139ba30addc29b73361e9.jpg',
-                    url: '/novelplay',
+                    url: '/animeplay',
                     name: '福利连'
                 },
                 {
                     img: 'https://cdn.yinghuacdn.top/upload/vod/20240120-1/4ff041d9f3d139ba30addc29b73361e9.jpg',
-                    url: '/novelplay',
+                    url: '/animeplay',
                     name: '福利连2'
                 },
                 {
                     img: 'https://cdn.yinghuacdn.top/upload/vod/20240120-1/4ff041d9f3d139ba30addc29b73361e9.jpg',
-                    url: '/novelplay',
+                    url: '/animeplay',
                     name: '福利连3'
                 },
                 {
                     img: 'https://cdn.yinghuacdn.top/upload/vod/20240120-1/4ff041d9f3d139ba30addc29b73361e9.jpg',
-                    url: '/novelplay',
+                    url: '/animeplay',
                     name: '福利连4'
                 },
                 {
                     img: 'https://cdn.yinghuacdn.top/upload/vod/20240120-1/4ff041d9f3d139ba30addc29b73361e9.jpg',
-                    url: '/novelplay',
+                    url: '/animeplay',
                     name: '福利连5'
                 },
                 {
                     img: 'https://cdn.yinghuacdn.top/upload/vod/20240120-1/4ff041d9f3d139ba30addc29b73361e9.jpg',
-                    url: '/novelplay',
+                    url: '/animeplay',
                     name: '福利连6'
                 },
                 {
                     img: 'https://cdn.yinghuacdn.top/upload/vod/20240120-1/4ff041d9f3d139ba30addc29b73361e9.jpg',
-                    url: '/novelplay',
+                    url: '/animeplay',
                     name: '福利连7'
                 },
             ],
@@ -67,7 +67,7 @@ export default {
 </script>
 
 <style>
-.novel-container {
+.anime-container {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -82,14 +82,14 @@ export default {
         background-color: aqua;
     }
 
-    .novel-list {
+    .bangumi-list {
         display: flex;
         width: 90%;
         min-height: 80vh;
         flex-wrap: wrap;
         background-color: rgb(200, 255, 0);
 
-        .novel-box {
+        .bangumi-box {
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -100,14 +100,14 @@ export default {
             /* background-color: blue; */
 
 
-            .novel-img {
+            .bangumi-img {
                 width: 90%;
                 height: 90%;
                 border-radius: 10px;
                 background-size: cover;
             }
 
-            .novel-info {
+            .bangumi-info {
                 width: 90%;
                 height: calc(10%-10px);
                 text-align: center;

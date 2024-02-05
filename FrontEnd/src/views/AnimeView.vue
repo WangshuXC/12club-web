@@ -3,11 +3,13 @@
         <div class="sort-bar"></div>
         <div class="bangumi-list">
             <div v-for="(item, index) in bangumiList" :key="index" class="bangumi-box">
-                <div class="bangumi-img" :style="{ 'background-image': 'url(' + item.img + ')' }">
-
-                </div>
+                <a :href="'/animeplay/' + item.id" class="bangumi-url" :alt="item.title">
+                    <div class="bangumi-img"
+                        :style="{ 'background-image': 'url(http://127.0.0.1:3000/anime/' + item.title + '/' + item.cover + ')' }">
+                    </div>
+                </a>
                 <div class="bangumi-info">
-                    {{ item.name }}
+                    {{ item.title }}
                 </div>
             </div>
         </div>
@@ -17,51 +19,30 @@
 </template>
 
 <script>
+import axios from 'axios';
 export default {
     data() {
         return {
-            page: 4,
-            pageNum: 10,
+            page: 1,
+            pageNum: 1,
             bangumiList: [
-                {
-                    img: 'https://cdn.yinghuacdn.top/upload/vod/20240120-1/4ff041d9f3d139ba30addc29b73361e9.jpg',
-                    url: '/animeplay',
-                    name: '福利连'
-                },
-                {
-                    img: 'https://cdn.yinghuacdn.top/upload/vod/20240120-1/4ff041d9f3d139ba30addc29b73361e9.jpg',
-                    url: '/animeplay',
-                    name: '福利连2'
-                },
-                {
-                    img: 'https://cdn.yinghuacdn.top/upload/vod/20240120-1/4ff041d9f3d139ba30addc29b73361e9.jpg',
-                    url: '/animeplay',
-                    name: '福利连3'
-                },
-                {
-                    img: 'https://cdn.yinghuacdn.top/upload/vod/20240120-1/4ff041d9f3d139ba30addc29b73361e9.jpg',
-                    url: '/animeplay',
-                    name: '福利连4'
-                },
-                {
-                    img: 'https://cdn.yinghuacdn.top/upload/vod/20240120-1/4ff041d9f3d139ba30addc29b73361e9.jpg',
-                    url: '/animeplay',
-                    name: '福利连5'
-                },
-                {
-                    img: 'https://cdn.yinghuacdn.top/upload/vod/20240120-1/4ff041d9f3d139ba30addc29b73361e9.jpg',
-                    url: '/animeplay',
-                    name: '福利连6'
-                },
-                {
-                    img: 'https://cdn.yinghuacdn.top/upload/vod/20240120-1/4ff041d9f3d139ba30addc29b73361e9.jpg',
-                    url: '/animeplay',
-                    name: '福利连7'
-                },
             ],
         }
     },
     methods: {
+        initBangumiData() {
+            axios.get(`http://127.0.0.1:5000/api/animepage/1`)
+                .then(response => {
+                    this.pageNum = response.data.total_pages;
+                    this.bangumiList = response.data.results;
+                })
+                .catch(error => {
+                    console.error("There was an error fetching the anime data:", error);
+                });
+        }
+    },
+    mounted() {
+        this.initBangumiData();
     }
 }
 </script>
@@ -79,6 +60,7 @@ export default {
     .sort-bar {
         width: 90%;
         height: 5vh;
+        margin-left: 2.25%;
         background-color: aqua;
     }
 
@@ -87,7 +69,7 @@ export default {
         width: 90%;
         min-height: 80vh;
         flex-wrap: wrap;
-        background-color: rgb(200, 255, 0);
+        /* background-color: rgb(200, 255, 0); */
 
         .bangumi-box {
             display: flex;
@@ -100,11 +82,16 @@ export default {
             /* background-color: blue; */
 
 
-            .bangumi-img {
+            .bangumi-url {
                 width: 90%;
                 height: 90%;
-                border-radius: 10px;
-                background-size: cover;
+
+                .bangumi-img {
+                    width: 100%;
+                    height: 100%;
+                    border-radius: 10px;
+                    background-size: cover;
+                }
             }
 
             .bangumi-info {
