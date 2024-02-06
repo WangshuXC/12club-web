@@ -32,7 +32,7 @@ class AnimeApi(Resource):
             items_per_page = 20
             offset = (int(animepage_id) - 1) * items_per_page
             # 查询指定范围内的动漫数据
-            anime_page_list = Anime.query.offset(offset).limit(items_per_page).all()
+            anime_page_list = Anime.query.order_by(Anime.id).offset(offset).limit(items_per_page).all()
             anime_count = Anime.query.count()
             total_page=math.ceil(anime_count/items_per_page)
             # 将查询结果转换成字典列表

@@ -5,7 +5,7 @@
             <div v-for="(item, index) in bangumiList" :key="index" class="bangumi-box">
                 <a :href="'/animeplay/' + item.id" class="bangumi-url" :alt="item.title">
                     <div class="bangumi-img"
-                        :style="{ 'background-image': 'url(http://127.0.0.1:3000/anime/' + item.title + '/' + item.cover + ')' }">
+                        :style="item.cover !== 'NULL' ? { 'background-image': 'url(http://127.0.0.1:3000/anime/' + encodeURIComponent(item.title) + '/' + encodeURIComponent(item.cover) + ')' } : { 'background-image': 'url(http://127.0.0.1:3000/anime/Cover.jpg)' }">
                     </div>
                 </a>
                 <div class="bangumi-info">
@@ -30,19 +30,31 @@ export default {
         }
     },
     methods: {
-        initBangumiData() {
-            axios.get(`http://127.0.0.1:5000/api/animepage/1`)
+        loadBangumiData() {
+            axios.get(`http://127.0.0.1:5000/api/animepage/${this.page}`)
                 .then(response => {
-                    this.pageNum = response.data.total_pages;
+                    this.pageNum = response.data.total_page;
                     this.bangumiList = response.data.results;
                 })
                 .catch(error => {
                     console.error("There was an error fetching the anime data:", error);
                 });
+        },
+        scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
         }
     },
     mounted() {
-        this.initBangumiData();
+        this.loadBangumiData();
+    },
+    watch: {
+        page() {
+            this.loadBangumiData();
+            this.scrollToTop();
+        }
     }
 }
 </script>
@@ -99,6 +111,9 @@ export default {
                 height: calc(10%-10px);
                 text-align: center;
                 margin-top: 10px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
             }
         }
     }
