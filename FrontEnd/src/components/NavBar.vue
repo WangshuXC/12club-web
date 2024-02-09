@@ -36,6 +36,7 @@ export default {
     justify-content: space-around;
     align-items: center;
     color: #000000;
+    user-select: none;
 }
 
 .navbar-index {

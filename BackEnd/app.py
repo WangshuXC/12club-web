@@ -1,7 +1,6 @@
 from flask import Flask
 from flask_cors import CORS
-from flask_sqlalchemy import SQLAlchemy
-from flask_restful import Api, Resource
+from flask_restful import Api
 import settings
 from settings import db
 from apis import HomeApi,UserApi,AnimeApi
@@ -16,6 +15,7 @@ api.add_resource(HomeApi, '/api')
 api.add_resource(AnimeApi, '/api/anime', '/api/anime/<int:anime_id>', endpoint='anime')
 api.add_resource(AnimeApi, '/api/animepage', '/api/animepage/<int:animepage_id>', endpoint='anime_page')
 api.add_resource(UserApi, '/api/user')
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0',debug='true')

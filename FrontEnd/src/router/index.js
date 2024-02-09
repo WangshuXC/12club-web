@@ -20,12 +20,13 @@ const router = createRouter({
       },
     },
     {
-      path: '/animeplay',
+      path: '/animeplay/:anime_id',
       name: 'animeplay',
       component: () => import('../views/AnimePlay.vue'),
       meta: {
-        showNavBar: false
+        showNavBar: true
       },
+      props: true
     },
     {
       path: '/comic',

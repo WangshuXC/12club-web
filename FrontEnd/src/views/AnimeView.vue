@@ -1,6 +1,22 @@
 <template>
     <div class="anime-container">
-        <div class="sort-bar"></div>
+        <div class="sort-bar">
+            <div class="sort-bar-item" :class="{ on: sort == 0 }" id="0" @click="updateSort(0)">
+                <font-awesome-icon :icon="['fas', 'caret-up']" class="up" :class="{ active: isAsc }" />
+                <span>播放数量</span>
+                <font-awesome-icon :icon="['fas', 'caret-down']" class="down" :class="{ active: !isAsc }" />
+            </div>
+            <div class="sort-bar-item" :class="{ on: sort == 1 }" id="1" @click="updateSort(1)">
+                <font-awesome-icon :icon="['fas', 'caret-up']" class="up" :class="{ active: isAsc }" />
+                <span>下载数量</span>
+                <font-awesome-icon :icon="['fas', 'caret-down']" class="down" :class="{ active: !isAsc }" />
+            </div>
+            <div class="sort-bar-item" :class="{ on: sort == 2 }" id="2" @click="updateSort(2)">
+                <font-awesome-icon :icon="['fas', 'caret-up']" class="up" :class="{ active: isAsc }" />
+                <span>更新时间</span>
+                <font-awesome-icon :icon="['fas', 'caret-down']" class="down" :class="{ active: !isAsc }" />
+            </div>
+        </div>
         <div class="bangumi-list">
             <div v-for="(item, index) in bangumiList" :key="index" class="bangumi-box">
                 <a :href="'/animeplay/' + item.id" class="bangumi-url" :alt="item.title">
@@ -20,18 +36,33 @@
 
 <script>
 import axios from 'axios';
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faCaretUp, faCaretDown } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+
+library.add(faCaretUp, faCaretDown)
+
 export default {
     data() {
         return {
             page: 1,
             pageNum: 1,
-            bangumiList: [
-            ],
+            bangumiList: [],
+            sort: 0,
+            isAsc: false,
         }
+    },
+    components: {
+        FontAwesomeIcon,
     },
     methods: {
         loadBangumiData() {
-            axios.get(`http://127.0.0.1:5000/api/animepage/${this.page}`)
+            const sortFields = ['view_count', 'download_count', 'update_time'];
+            let sortParam = sortFields[this.sort] || 'id';
+            let orderbyParam = this.isAsc ? 'asc' : 'desc';
+
+            let requestUrl = `http://127.0.0.1:5000/api/animepage/${this.page}?sort=${sortParam}&orderby=${orderbyParam}`;
+            axios.get(requestUrl)
                 .then(response => {
                     this.pageNum = response.data.total_page;
                     this.bangumiList = response.data.results;
@@ -45,7 +76,17 @@ export default {
                 top: 0,
                 behavior: 'smooth'
             });
-        }
+        },
+        updateSort(id) {
+            if (this.sort === id) {
+                this.isAsc = !this.isAsc;
+            } else {
+                this.sort = id;
+                this.isAsc = false;
+            }
+            this.loadBangumiData();
+            this.page = 1;
+        },
     },
     mounted() {
         this.loadBangumiData();
@@ -65,15 +106,54 @@ export default {
     flex-direction: column;
     align-items: center;
     width: 100vw;
-    min-height: 90vh;
+    min-height: 80vh;
     margin-top: 10vh;
     /* background-color: black; */
 
     .sort-bar {
-        width: 90%;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding: 2px;
+        width: 88%;
         height: 5vh;
-        margin-left: 2.25%;
-        background-color: aqua;
+        user-select: none;
+        /* background-color: aqua; */
+
+        .sort-bar-item {
+            min-width: 6.5%;
+            margin-right: 5%;
+            position: relative;
+            cursor: pointer;
+
+            .up {
+                position: absolute;
+                top: 0;
+                right: 0;
+                color: #dddddd;
+            }
+
+
+
+            .down {
+                position: absolute;
+                bottom: 0;
+                right: 0;
+                color: #dddddd;
+            }
+        }
+
+        .sort-bar-item.on {
+            color: #00a1d6;
+
+            .up.active {
+                color: #00a1d6;
+            }
+
+            .down.active {
+                color: #00a1d6
+            }
+        }
     }
 
     .bangumi-list {
