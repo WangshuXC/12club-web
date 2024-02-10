@@ -40,6 +40,20 @@
         </div>
         <div class="left-box-container">
             <div class="media-info">
+                <img src="http://127.0.0.1:3000/anime/药屋少女的呢喃/Cover.jpg" alt="" class="cover">
+                <div class="info">
+                    <p class="title">药屋少女的呢喃</p>
+                    <p class="text">{{ view_count }}播放&nbsp; &nbsp;·&nbsp;&nbsp;{{ download_count }}下载</p>
+                    <p class="text">{{ isOver ? "已完结，全" + this.episode + "话" : "连载中，最近更新时间：" + update_date }}</p>
+                    <p class="introduction" :class="{ expand: isExpand }" ref="introductionRef">
+                        简介：
+                        {{ description }}
+                    </p>
+                    <div v-if="isNeedExpand && isExpand" class="reduce" @click="reduce">收起</div>
+                    <div v-if="isNeedExpand && !isExpand" class="gradient" @click="expend">
+                        <div class="expandBtn">展开</div>
+                    </div>
+                </div>
 
             </div>
         </div>
@@ -59,10 +73,32 @@ export default {
             episodeNameList: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
             downloadedIndex: [],
             dragging: false,
+            isOver: false,
+            isExpand: false,
+            isNeedExpand: false,
+            update_date: "2024-02-06 15:22:38",
+            view_count: 6666,
+            download_count: 666,
+            description: `寿命逾千年的魔法使芙莉莲，以曾经共同战胜魔王的勇者辛美尔之死为契机，踏上了了解人类的旅途。
+            
+            邂逅了同属勇者小队的僧侣海塔与战士艾泽分别培养出的菲伦与休塔尔克，芙莉莲与二人一同前往灵魂安眠之地。为了前去需要【一级魔法使】资格，因此芙莉莲与菲伦前往魔法都市维萨斯特，参加一级魔法使选拔测验。在那里有着形形色色的卓越魔法使…此刻，最顶尖的魔法将在维萨斯特展开激烈碰撞！
+            邂逅了同属勇者小队的僧侣海塔与战士艾泽分别培养出的菲伦与休塔尔克，芙莉莲与二人一同前往灵魂安眠之地。为了前去需要【一级魔法使】资格，因此芙莉莲与菲伦前往魔法都市维萨斯特，参加一级魔法使选拔测验。在那里有着形形色色的卓越魔法使…此刻，最顶尖的魔法将在维萨斯特展开激烈碰撞！
+            邂逅了同属勇者小队的僧侣海塔与战士艾泽分别培养出的菲伦与休
+            邂逅了同属勇者小队的僧侣海塔与战士艾泽分别培养出的菲伦与休
+            邂逅了同属勇者小队的僧侣海塔与战士艾泽分别培养出的菲伦与休
+            `
         };
     },
     mounted() {
         this.initPlayer();
+        this.$nextTick(() => {
+            var introduction = this.$refs.introductionRef;
+            if (introduction.scrollHeight > introduction.clientHeight) {
+                this.isNeedExpand = true;
+            } else {
+                this.isNeedExpand = false;
+            }
+        });
     },
     methods: {
         initPlayer() {
@@ -88,6 +124,20 @@ export default {
         },
         handleMouseUp() {
             this.dragging = false;
+        },
+        expend() {
+            this.isExpand = true;
+            const infoElement = document.querySelector('.info');
+            if (infoElement) {
+                infoElement.style.maxHeight = '100vh';
+            }
+        },
+        reduce() {
+            this.isExpand = false;
+            const infoElement = document.querySelector('.info');
+            if (infoElement) {
+                infoElement.style.maxHeight = 'calc(68vw*.25)';
+            }
         }
     },
 };
@@ -129,7 +179,7 @@ export default {
         display: flex;
         flex-direction: column;
 
-        background-color: #61666d;
+        /* background-color: #61666d; */
 
         position: absolute;
         left: 0;
@@ -140,10 +190,70 @@ export default {
 .left-box-container {
     .media-info {
         width: 100%;
-        height: calc(68vw*.25);
+        /* max-height: calc(68vw*.25); */
         display: flex;
         justify-content: space-between;
-        background-color: antiquewhite;
+
+        .cover {
+            height: calc(68vw*.25);
+            width: calc(68vw*.1875);
+            border-radius: 6px;
+        }
+
+        .info {
+            display: flex;
+            flex-direction: column;
+            padding-left: 10px;
+            width: 80%;
+            max-height: calc(68vw*.25);
+
+            position: relative;
+
+            .title {
+                height: 25px;
+                font-size: 18px;
+                margin-bottom: 10px;
+                font-weight: 550;
+            }
+
+            .text {
+                height: 18px;
+                font-size: 14px;
+                margin-bottom: 6px;
+                color: #61666d;
+            }
+
+            .introduction {
+                font-size: 14px;
+                white-space: pre-line;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .gradient {
+                position: absolute;
+                height: 40px;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                cursor: pointer;
+                background: linear-gradient(to top, #ffffff, #ffffff00);
+
+                .expandBtn {
+                    position: absolute;
+                    bottom: -5px;
+                    right: 0;
+                    font-size: 14px;
+                    color: #00a1d6;
+                }
+            }
+        }
+
+        .reduce {
+            font-size: 14px;
+            color: #00a1d6;
+            cursor: pointer;
+        }
     }
 }
 

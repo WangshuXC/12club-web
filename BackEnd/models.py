@@ -13,7 +13,7 @@ class Anime(db.Model):
     title_japanese = db.Column(db.String(255))
     description = db.Column(db.String(4095))
     release_date = db.Column(db.DateTime, nullable=False)
-    update_date = db.Column(db.DateTime, nullable=False, onupdate=db.func.current_timestamp())
+    update_date = db.Column(db.DateTime, nullable=False)
     view_count = db.Column(db.Integer, default=0, nullable=False)
     download_count = db.Column(db.Integer, default=0, nullable=False)
     cover = db.Column(db.String(255))
