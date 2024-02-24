@@ -30,7 +30,8 @@
             </div>
         </div>
         <v-pagination v-model="page" :length="pageNum" :total-visible="5" prev-icon="mdi-chevron-left"
-            next-icon="mdi-chevron-right" class="page-control"></v-pagination>
+            next-icon="mdi-chevron-right" class="page-control" color="#00a1d6"></v-pagination>
+        <div class="white"></div>
     </div>
 </template>
 
@@ -88,8 +89,10 @@ export default {
             this.page = 1;
         },
     },
-    mounted() {
+    onLoad() {
         this.loadBangumiData();
+    },
+    mounted() {
     },
     watch: {
         page() {
@@ -106,7 +109,6 @@ export default {
     flex-direction: column;
     align-items: center;
     width: 100vw;
-    min-height: 80vh;
     margin-top: 10vh;
     /* background-color: black; */
 
@@ -159,7 +161,7 @@ export default {
     .bangumi-list {
         display: flex;
         width: 90%;
-        min-height: 80vh;
+        min-height: 20vh;
         flex-wrap: wrap;
         /* background-color: rgb(200, 255, 0); */
 
@@ -196,10 +198,19 @@ export default {
                 text-overflow: ellipsis;
             }
         }
+
+        .bangumi-box:hover {
+            color: #00a1d6;
+        }
     }
 
     .page-control {
         margin-top: 3%;
+    }
+
+    .white {
+        width: 100%;
+        height: 10vh;
     }
 }
 </style>

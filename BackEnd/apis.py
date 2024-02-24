@@ -17,9 +17,11 @@ class AnimeApi(Resource):
                 return {
                     'id': anime.id,
                     'title': anime.title,
+                    'episode_count':anime.episode_count,
                     'title_another': anime.title_another,
                     'title_japanese': anime.title_japanese,
                     'description': anime.description,
+                    'isover':anime.isover,
                     'release_date': anime.release_date.isoformat(),
                     'update_date': anime.update_date.isoformat(),
                     'view_count': anime.view_count,

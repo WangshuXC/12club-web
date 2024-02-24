@@ -1,6 +1,6 @@
 <template>
     <div class="navbar">
-        <div class="logo">logo</div>
+        <div class="logo">logo.jpg</div>
         <div class="navbar-index">
             <a href="/">首页</a>
             <a href="/anime">动漫</a>
