@@ -108,18 +108,19 @@ export default {
             isOver: false,
             isExpand: false,
             isNeedExpand: false,
-            title: "鬼灭之刃",
+            title: "Title",
             update_date: "2024-02-06 15:22:38",
             view_count: 6666,
             download_count: 666,
             description: ``,
         };
     },
-    onLoad() {
+    beforeMount() {
         this.initBangumiData();
-        this.initPlayer();
     },
     mounted() {
+        // this.initBangumiData();
+        this.initPlayer();
         this.$nextTick(() => {
             var introduction = this.$refs.introductionRef;
             if (introduction.scrollHeight > introduction.clientHeight) {

@@ -12,9 +12,18 @@ import '@mdi/font/css/materialdesignicons.css'
 
 const app = createApp(App)
 const vuetify = createVuetify({
-    components,
-    directives,
-  })
+  components,
+  directives,
+})
+
+app.mixin({
+  data() {
+    return {
+      API_URL: 'http://127.0.0.1:5000/api',
+      DATA_URL: 'http://127.0.0.1:3000'
+    }
+  },
+})
 
 app.use(router)
 app.use(vuetify)

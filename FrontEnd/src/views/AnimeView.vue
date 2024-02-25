@@ -56,13 +56,27 @@ export default {
     components: {
         FontAwesomeIcon,
     },
+    beforeMount() {
+        this.loadBangumiData();
+    },
+    mounted() {
+        if (this.bangumiList.length === 0) {
+            this.loadBangumiData();
+        }
+    },
+    watch: {
+        page() {
+            this.loadBangumiData();
+            this.scrollToTop();
+        }
+    },
     methods: {
         loadBangumiData() {
             const sortFields = ['view_count', 'download_count', 'update_time'];
             let sortParam = sortFields[this.sort] || 'id';
             let orderbyParam = this.isAsc ? 'asc' : 'desc';
 
-            let requestUrl = `http://127.0.0.1:5000/api/animepage/${this.page}?sort=${sortParam}&orderby=${orderbyParam}`;
+            let requestUrl = `${this.API_URL}/animepage/${this.page}?sort=${sortParam}&orderby=${orderbyParam}`;
             axios.get(requestUrl)
                 .then(response => {
                     this.pageNum = response.data.total_page;
@@ -89,17 +103,6 @@ export default {
             this.page = 1;
         },
     },
-    onLoad() {
-        this.loadBangumiData();
-    },
-    mounted() {
-    },
-    watch: {
-        page() {
-            this.loadBangumiData();
-            this.scrollToTop();
-        }
-    }
 }
 </script>
 
@@ -173,7 +176,9 @@ export default {
             margin-top: 15px;
             width: 25%;
             height: calc(22.5vw*4/3);
-            /* background-color: blue; */
+
+            border-radius: 15px;
+            transition: background-color 0.2s ease-in-out;
 
 
             .bangumi-url {
@@ -200,7 +205,7 @@ export default {
         }
 
         .bangumi-box:hover {
-            color: #00a1d6;
+            background-color: #e0f3fa;
         }
     }
 

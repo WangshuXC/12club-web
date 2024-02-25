@@ -37,6 +37,7 @@ export default {
     align-items: center;
     color: #000000;
     user-select: none;
+    overflow-y: hidden;
 }
 
 .navbar-index {
