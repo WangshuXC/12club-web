@@ -9,11 +9,12 @@
     </div>
     <div class="container-box">
         <div class="container">
+            <label for="title">番剧更新</label>
             <div class="update-box" id="anime">
                 <div v-for="(item, index) in animeList" :key="index" class="update-item">
                     <a :href="'/animeplay/' + item.id" class="update-item-url" :alt="item.title">
                         <div class="update-item-img"
-                            :style="item.cover !== 'NULL' ? { 'background-image': 'url(http://127.0.0.1:3000/anime/' + encodeURIComponent(item.title) + '/' + encodeURIComponent(item.cover) + ')' } : { 'background-image': 'url(http://127.0.0.1:3000/anime/Cover.jpg)' }">
+                            :style="item.cover !== 'NULL' ? { 'background-image': `url(${this.DATA_URL}/anime/` + encodeURIComponent(item.title) + '/' + encodeURIComponent(item.cover) + ')' } : { 'background-image': 'url(http://127.0.0.1:3000/anime/Cover.jpg)' }">
                         </div>
                     </a>
                     <div class="update-item-title">
@@ -21,14 +22,17 @@
                     </div>
                 </div>
             </div>
+
+            <label for="title">漫画更新</label>
             <div class="update-box" id="comic">
-                漫画更新
             </div>
+
+            <label for="title">小说更新</label>
             <div class="update-box" id="novel">
-                小说更新
             </div>
+
+            <label for="title">音乐更新</label>
             <div class="update-box" id="music">
-                音乐更新
             </div>
         </div>
     </div>
@@ -195,13 +199,20 @@ body {
         justify-content: space-around;
         align-items: center;
         top: calc(100vh - 0px);
-        width: 80vw;
-        margin-left: 10vw;
+        width: 90vw;
+        margin-left: 5vw;
         border-radius: 0.5rem;
         background-color: #f3f4f6;
         transition: background-color 0.2s ease-in-out;
         box-shadow: 0 12px 15px 0 rgba(0, 0, 0, 0.24), 0 17px 50px 0 rgba(0, 0, 0, 0.19);
         padding: 3vw 0;
+
+        label {
+            width: 95%;
+            font-size: larger;
+            margin-left: 50px;
+            margin-bottom: 1rem;
+        }
 
         .update-box {
             display: flex;

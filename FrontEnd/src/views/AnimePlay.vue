@@ -140,12 +140,12 @@ export default {
             var urlParts = currentUrl.split('/');
             var animeid = urlParts[urlParts.length - 1];
 
-            let requestUrl = `http://127.0.0.1:5000/api/anime/${animeid}`;
+            let requestUrl = `${this.API_URL}/anime/${animeid}`;
             axios.get(requestUrl)
                 .then(response => {
                     this.title = response.data.title;
-                    this.videoUrl = `http://127.0.0.1:3000/anime/${response.data.title}/1.mp4`
-                    this.coverUrl = `http://127.0.0.1:3000/anime/${response.data.title}/Cover.jpg`
+                    this.videoUrl = `${this.DATA_URL}/anime/${response.data.title}/1.mp4`
+                    this.coverUrl = `${this.DATA_URL}/anime/${response.data.title}/Cover.jpg`
                     this.episode = response.data.episode_count;
                     this.description = response.data.description;
                     this.isOver = response.data.isover;

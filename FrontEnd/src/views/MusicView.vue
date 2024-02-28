@@ -98,7 +98,7 @@ export default {
             prevVolume: 100,
             progress: 0,
             thumbSize: 0,
-            audioSrc: "http://127.0.0.1:3000/music/%E4%B8%8D%E7%9C%A0%E4%B9%8B%E5%A4%9C/%E5%BC%A0%E6%9D%B0&HOYO-MiX%20-%20%E4%B8%8D%E7%9C%A0%E4%B9%8B%E5%A4%9C.mp3",
+            audioSrc: `${this.DATA_URL}/music/%E4%B8%8D%E7%9C%A0%E4%B9%8B%E5%A4%9C/%E5%BC%A0%E6%9D%B0&HOYO-MiX%20-%20%E4%B8%8D%E7%9C%A0%E4%B9%8B%E5%A4%9C.mp3`,
             audioElement: null,
             title: '不眠之夜',
             author: '张杰/HOYO-MiX',

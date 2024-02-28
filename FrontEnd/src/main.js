@@ -19,8 +19,8 @@ const vuetify = createVuetify({
 app.mixin({
   data() {
     return {
-      API_URL: 'http://127.0.0.1:5000/api',
-      DATA_URL: 'http://127.0.0.1:3000'
+      API_URL: 'http://10.130.26.91:5000/api',
+      DATA_URL: 'http://10.130.26.91:3000'
     }
   },
 })
