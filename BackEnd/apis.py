@@ -8,8 +8,45 @@ class HomeApi(Resource):
     def get(self):
         return {'message': 'Hello, World!'}
 
-class AnimeApi(Resource):
-    def get(self, anime_id=None, animepage_id=None):
+class AnimeApi_page(Resource):
+    def get(self, animepage_id=None):
+        if animepage_id:
+            # 捕获请求中的 orderby 参数
+            sort = request.args.get('sort', 'view_count')
+            orderby = request.args.get('orderby','desc')
+
+            # 计算offset值
+            items_per_page = 20
+            offset = (int(animepage_id) - 1) * items_per_page
+
+            # 根据sort和orderby参数动态构建排序表达式
+            if sort in ['view_count', 'download_count', 'update_date']:
+                sort_field = getattr(Anime, sort)
+            else:
+                sort_field = Anime.id
+
+            if orderby == 'desc':
+                sort_expression = sort_field.desc()
+            else:  # 默认使用升序
+                sort_expression = sort_field.asc()
+
+            # 查询指定范围内的动漫数据
+            anime_page_list = Anime.query.order_by(sort_expression).offset(offset).limit(items_per_page).all()
+            anime_count = Anime.query.count()
+            total_page=math.ceil(anime_count/items_per_page)
+            # 将查询结果转换成字典列表
+            results = [{
+                'id': anime.id,
+                'title': anime.title,
+                'cover':anime.cover,
+            } for anime in anime_page_list]
+            result={'total_page':total_page,'results':results}
+            return result,200
+        else:
+            return {'message': 'Anime not found'}, 404
+        
+class AnimeApi_detail(Resource):
+    def get(self, anime_id=None):
         if anime_id:
             # 根据 ID 获取特定的动漫信息
             anime = Anime.query.get(anime_id)
@@ -29,39 +66,6 @@ class AnimeApi(Resource):
                 },200
             else:
                 return {'message': 'Anime not found'}, 404
-        elif animepage_id:
-            # 捕获请求中的 orderby 参数
-            sort = request.args.get('sort', 'view_count')
-            orderby = request.args.get('orderby','desc')
-
-            # 计算offset值
-            items_per_page = 20
-            offset = (int(animepage_id) - 1) * items_per_page
-
-            # 根据sort和orderby参数动态构建排序表达式
-            if sort in ['view_count', 'download_count', 'update_date']:
-                sort_field = getattr(Anime, sort)
-            else:
-                sort_field = Anime.id  # 默认使用 id 作为排序字段
-                
-            if orderby == 'desc':
-                sort_expression = sort_field.desc()
-            else:  # 默认使用升序
-                sort_expression = sort_field.asc()
-
-            # 查询指定范围内的动漫数据
-            # anime_page_list = Anime.query.order_by(Anime.id).offset(offset).limit(items_per_page).all()
-            anime_page_list = Anime.query.order_by(sort_expression).offset(offset).limit(items_per_page).all()
-            anime_count = Anime.query.count()
-            total_page=math.ceil(anime_count/items_per_page)
-            # 将查询结果转换成字典列表
-            results = [{
-                'id': anime.id,
-                'title': anime.title,
-                'cover':anime.cover,
-            } for anime in anime_page_list]
-            result={'total_page':total_page,'results':results}
-            return result,200
         else:
             # 返回表内所有的动漫信息
             anime_list = Anime.query.all()
