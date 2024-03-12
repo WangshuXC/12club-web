@@ -1,16 +1,22 @@
 <template>
     <div class="admin-login">
         <h1>Admin Login</h1>
-        <form>
-            <label for="username">Username:</label>
-            <input type="text" id="username" v-model="username" placeholder="Enter your username" required>
+        <br>
+        <v-form v-model="form" @submit.prevent="login">
+            <v-text-field v-model="username" :readonly="loading" :rules="[usernameRequired]" label="Username"
+                clearable></v-text-field>
 
-            <label for="password">Password:</label>
-            <input type="password" id="password" v-model="password" placeholder="Enter your password" required>
+            <v-text-field v-model="password" :readonly="loading" :rules="[passwordRequired]" label="Password"
+                :append-inner-icon="show ? 'mdi-eye' : 'mdi-eye-off'" @click:append-inner="show = !show"
+                :type="show ? 'text' : 'password'" placeholder="Enter your password"></v-text-field>
 
-            <button type="button" @click="login()">Login</button>
-            <button type="button" @click="signup()">Signup</button>
-        </form>
+            <br>
+
+            <v-btn :disabled="!form" :loading="loading" color="success" size="large" type="submit" variant="elevated"
+                block>
+                Log in
+            </v-btn>
+        </v-form>
     </div>
 </template>
 
@@ -19,21 +25,34 @@ import axios from 'axios';
 export default {
     data() {
         return {
+            form: false,
+            loading: false,
+            show: false,
             username: '',
-            password: ''
+            password: null
         };
     },
     mounted() {
 
     },
     methods: {
+        usernameRequired(v) {
+            return !!v || '用户名为空'
+        },
+        passwordRequired(v) {
+            return !!v || '密码为空'
+        },
         login() {
+            if (!this.form) return;
+            this.loading = true;
+
             const formData = {
                 username: this.username,
                 password: this.password
             };
             axios.post(`${this.API_URL}/login`, formData, { withCredentials: true })
                 .then(response => {
+                    setTimeout(() => (this.loading = false), 1000)
                     this.$router.push('/admin/op');
                     console.log(response);
                 })
@@ -64,8 +83,9 @@ export default {
 
 <style scoped>
 .admin-login {
-    max-width: 300px;
-    margin: 0 auto;
+    max-width: 30vw;
+    margin-inline: auto;
+    margin-top: calc(50vh - 200px);
     padding: 20px;
     border: 1px solid #ccc;
     border-radius: 5px;

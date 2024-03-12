@@ -54,8 +54,8 @@ class LoginApi(Resource):
             }
             resp = make_response(jsonify(resp), 200)
 
-            set_access_cookies(resp, access_token, max_age=1)
-            set_refresh_cookies(resp, refresh_token, max_age=10)
+            set_access_cookies(resp, access_token, timedelta(minutes=15))
+            set_refresh_cookies(resp, refresh_token, timedelta(hours=1))
             return resp
         else:
             return {"message": "Invalid username or password"}, 401
