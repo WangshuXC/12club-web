@@ -9,7 +9,7 @@ from flask_jwt_extended import JWTManager
 
 app = Flask(__name__)
 
-CORS(app, resources={r"/api/*": {"origins": "http://localhost:6262"}})
+CORS(app)
 
 app.config["JWT_SECRET_KEY"] = "your_secret_key"
 jwt = JWTManager(app)

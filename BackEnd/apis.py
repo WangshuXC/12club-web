@@ -1,8 +1,7 @@
-from flask import Flask, jsonify, request, make_response
+from flask import Flask, jsonify, request
 from flask_restful import Resource, reqparse
 from flask_jwt_extended import (
     JWTManager,
-    jwt_required,
     create_access_token,
     create_refresh_token,
     get_jwt_identity,
@@ -28,13 +27,19 @@ class LoginApi(Resource):
         password = args["password"]
         user = User.query.filter_by(username=username).first()
         if user and user.verify_password(password):
-            # Create the tokens we will be sending back to the user
-            access_token = create_access_token(identity=username)
+            access_token = create_access_token(
+                identity=username, expires_delta=timedelta(hours=0.5)
+            )
+            refresh_token = create_refresh_token(
+                identity=username, expires_delta=timedelta(hours=1)
+            )
 
-            # Set the JWT cookies in the response
-            resp = make_response(jsonify({"login": True}), 200)
-            set_access_cookies(resp, access_token)
-            return resp
+            return {
+                "message": "Login success",
+                "ifsuccess": True,
+                "access_token": access_token,
+                "refresh_token": refresh_token,
+            }, 200
         else:
             return {"message": "Invalid username or password"}, 401
 

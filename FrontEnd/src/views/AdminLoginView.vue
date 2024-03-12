@@ -16,6 +16,7 @@
 
 <script>
 import axios from 'axios';
+import Cookies from 'vue-cookies';
 export default {
     data() {
         return {
@@ -31,15 +32,16 @@ export default {
             };
             axios.post(`${this.API_URL}/login`, formData)
                 .then(response => {
+                    console.log(response.data['access_token']);
+                    Cookies.set('access_token', response.data.access_token, '1h');
+                    Cookies.set('refresh_token', response.data.refresh_token, '1d');
                     this.$router.push('/admin/op');
-                    console.log(response.data);
+                    console.log(response);
                 })
                 .catch(error => {
                     // 处理错误逻辑
                     console.error(error);
                 });
-            console.log('Username:', this.username);
-            console.log('Password:', this.password);
         },
         signup() {
             console.log('signup')
@@ -56,8 +58,6 @@ export default {
                     // 处理错误逻辑
                     console.error(error);
                 });
-            console.log('Username:', this.username);
-            console.log('Password:', this.password);
         }
     }
 };
