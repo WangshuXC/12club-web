@@ -1,19 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-// function checkTokenAndRedirect(to, from, next) {
-//   const isLoggedIn = localStorage.getItem('token');
-
-//   if (isLoggedIn) {
-//     // 如果 token 存在，可以发送请求到后端验证 token 的有效性
-//     // 省略实际的 token 验证过程
-//     // 假设验证通过，则继续导航到目标页面
-//     next();
-//   } else {
-//     // 如果 token 不存在，跳转到登录页
-//     next('/admin');
-//   }
-// }
-
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -88,7 +74,7 @@ const router = createRouter({
       name: 'adminOp',
       component: () => import('../views/AdminView.vue'),
       meta: {
-        showNavBar: true
+        showNavBar: false
       },
       // beforeEnter: checkTokenAndRedirect()
     }

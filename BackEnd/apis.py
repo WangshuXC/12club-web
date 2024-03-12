@@ -38,8 +38,7 @@ class SignupApi(Resource):
         username = args["username"]
         password = args["password"]
 
-        user = User()
-        user.new_user(username, password)
+        user = User().new_user(username, password)
         db.session.add(user)
         db.session.commit()
         return {"message": "Signup success"}, 201

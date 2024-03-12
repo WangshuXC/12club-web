@@ -8,8 +8,8 @@
             <label for="password">Password:</label>
             <input type="password" id="password" v-model="password" placeholder="Enter your password" required>
 
-            <button type="login" @click="login()">Login</button>
-            <button type="signup" @click="signup()">Signup</button>
+            <button type="button" @click="login()">Login</button>
+            <button type="button" @click="signup()">Signup</button>
         </form>
     </div>
 </template>
@@ -31,12 +31,13 @@ export default {
             };
             axios.post(`${this.API_URL}/login`, formData)
                 .then(response => {
-                    // 登录成功逻辑
+                    this.$router.push('/admin/op');
                     console.log(response.data);
                 })
                 .catch(error => {
                     // 处理错误逻辑
-                    console.error(error);
+                    console.log('error')
+                    // console.error(error);
                 });
             console.log('Username:', this.username);
             console.log('Password:', this.password);
