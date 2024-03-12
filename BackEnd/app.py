@@ -9,7 +9,7 @@ from flask_jwt_extended import JWTManager
 
 app = Flask(__name__)
 
-CORS(app)
+CORS(app, supports_credentials=True)
 
 app.config["JWT_SECRET_KEY"] = "your_secret_key"
 jwt = JWTManager(app)

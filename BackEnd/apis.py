@@ -1,11 +1,9 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, make_response
 from flask_restful import Resource, reqparse
 from flask_jwt_extended import (
-    JWTManager,
-    create_access_token,
-    create_refresh_token,
-    get_jwt_identity,
-    set_access_cookies,
+    JWTManager, jwt_required, create_access_token, create_refresh_token,
+    get_jwt, set_access_cookies, set_refresh_cookies,
+    jwt_required
 )
 from models import User, Anime
 from settings import db
@@ -13,8 +11,22 @@ import math
 from datetime import timedelta
 
 
+
+app = Flask(__name__)
+
+# Setup the Flask-JWT-Extended
+app.config['JWT_SECRET_KEY'] = '12345678'  # Change this!
+app.config["JWT_COOKIE_SECURE"] = False
+jwt = JWTManager(app)
+
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(minutes=60) 
+app.config['JWT_REFRESH_TOKEN_EXPIRES'] = timedelta(minutes=120) 
 class LoginApi(Resource):
+    @jwt_required(optional=True)
     def post(self):
+        current_token = get_jwt()
+        if current_token:
+            return {"message": "You are already logged in"}, 200
         parser = reqparse.RequestParser()
         parser.add_argument(
             "username", type=str, required=True, help="Username is required"
@@ -27,21 +39,34 @@ class LoginApi(Resource):
         password = args["password"]
         user = User.query.filter_by(username=username).first()
         if user and user.verify_password(password):
-            access_token = create_access_token(
-                identity=username, expires_delta=timedelta(hours=0.5)
-            )
-            refresh_token = create_refresh_token(
-                identity=username, expires_delta=timedelta(hours=1)
-            )
+            # Create the tokens we will be sending back to the user
+            access_token = create_access_token(identity=username)
+            refresh_token = create_refresh_token(identity=username)
+            
+            # Create the response
+            resp = {'login': True}
+            resp = make_response(jsonify(resp), 200)
+            # Set the JWT cookies in the response
 
-            return {
-                "message": "Login success",
-                "ifsuccess": True,
-                "access_token": access_token,
-                "refresh_token": refresh_token,
-            }, 200
+
+
+            set_access_cookies(resp, access_token)
+            set_refresh_cookies(resp, refresh_token)
+            return resp
         else:
             return {"message": "Invalid username or password"}, 401
+        
+class RefreshTokenApi(Resource):
+    @jwt_required
+    def post(self):
+        # Create the new access token
+        current_user = get_jwt_identity()
+        access_token = create_access_token(identity=current_user)
+        
+        # Set the JWT access cookie in the response
+        resp = jsonify({'refresh': True})
+        set_access_cookies(resp, access_token)
+        return resp, 200
 
 
 class SignupApi(Resource):

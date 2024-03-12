@@ -30,11 +30,8 @@ export default {
                 username: this.username,
                 password: this.password
             };
-            axios.post(`${this.API_URL}/login`, formData)
+            axios.post(`${this.API_URL}/login`, formData, {withCredentials: true})
                 .then(response => {
-                    console.log(response.data['access_token']);
-                    Cookies.set('access_token', response.data.access_token, '1h');
-                    Cookies.set('refresh_token', response.data.refresh_token, '1d');
                     this.$router.push('/admin/op');
                     console.log(response);
                 })
