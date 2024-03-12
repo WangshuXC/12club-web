@@ -36,8 +36,7 @@ export default {
                 })
                 .catch(error => {
                     // 处理错误逻辑
-                    console.log('error')
-                    // console.error(error);
+                    console.error(error);
                 });
             console.log('Username:', this.username);
             console.log('Password:', this.password);
@@ -51,7 +50,7 @@ export default {
             axios.post(`${this.API_URL}/signup`, formData)
                 .then(response => {
                     // 登录成功逻辑
-                    console.log(response.data);
+                    console.log(response);
                 })
                 .catch(error => {
                     // 处理错误逻辑

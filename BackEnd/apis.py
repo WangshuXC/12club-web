@@ -1,11 +1,19 @@
-from flask import request
+from flask import Flask, jsonify, request, make_response
 from flask_restful import Resource, reqparse
+from flask_jwt_extended import (
+    JWTManager,
+    jwt_required,
+    create_access_token,
+    create_refresh_token,
+    get_jwt_identity,
+    set_access_cookies,
+)
 from models import User, Anime
 from settings import db
 import math
+from datetime import timedelta
 
 
-# login api
 class LoginApi(Resource):
     def post(self):
         parser = reqparse.RequestParser()
@@ -20,7 +28,13 @@ class LoginApi(Resource):
         password = args["password"]
         user = User.query.filter_by(username=username).first()
         if user and user.verify_password(password):
-            return {"message": "Login success"}, 200
+            # Create the tokens we will be sending back to the user
+            access_token = create_access_token(identity=username)
+
+            # Set the JWT cookies in the response
+            resp = make_response(jsonify({"login": True}), 200)
+            set_access_cookies(resp, access_token)
+            return resp
         else:
             return {"message": "Invalid username or password"}, 401
 

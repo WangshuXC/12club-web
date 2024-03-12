@@ -67,18 +67,16 @@ const router = createRouter({
       meta: {
         showNavBar: false
       },
-      // beforeEnter: checkTokenAndRedirect()
     },
     {
       path: '/admin/op',
       name: 'adminOp',
       component: () => import('../views/AdminView.vue'),
       meta: {
-        showNavBar: false
+        showNavBar: false,
+        requiresAuth: true
       },
-      // beforeEnter: checkTokenAndRedirect()
     }
   ]
 })
-
 export default router
