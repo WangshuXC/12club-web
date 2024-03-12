@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
     <div class="anime-container">
         <div class="sort-bar"></div>
         <div class="bangumi-list">
@@ -120,4 +120,66 @@ export default {
         margin-top: 3%;
     }
 }
+</style> -->
+
+<template>
+    <div class="container">
+        <div class="wrapper" :style="{ transform: `translateX(${translateX}px)` }">
+            <div class="item" v-for="n in 3" :key="n">Item {{ n }}</div>
+        </div>
+    </div>
+    <button @click="moveTo(0)">Item 1</button>
+    <button @click="moveTo(1)">Item 2</button>
+    <button @click="moveTo(2)">Item 3</button>
+</template>
+  
+
+<script>
+export default {
+    data() {
+        return {
+            currentIndex: 0, // 当前处于中央的div的索引
+            translateX: 0,
+        };
+    },
+    methods: {
+        moveTo(index) {
+            const itemWidth = window.innerWidth * 0.7; // 单个项的宽度
+            const gap = 20; // 项之间的间隔，与CSS中的gap相同
+            this.currentIndex = index;
+            // 计算偏移量，确保选中的项居中显示
+            this.translateX = -(itemWidth + gap) * index + (window.innerWidth - itemWidth) / 2;
+        },
+    },
+    mounted() {
+        // 初始化时，让第一个div居中
+        this.moveTo(0);
+    },
+};
+</script>
+
+<style scoped>
+.container {
+    overflow: hidden;
+    width: 100vw;
+    position: relative;
+}
+
+.wrapper {
+    display: flex;
+    gap: 20px;
+    /* 根据需要调整间隔 */
+    transition: transform 0.5s ease;
+    /* 平滑过渡效果 */
+}
+
+.item {
+    width: 70vw;
+    height: 200px;
+    /* 根据需要调整高度 */
+    background-color: lightgray;
+    /* 仅作为示例 */
+}
 </style>
+
+

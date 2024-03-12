@@ -3,7 +3,10 @@
         <div class="sub-div-container">
             <div v-for="(item, index) in iBannerList" :key="index" class="sub-div"
                 :style="{ backgroundImage: `url(${item.background})` }">
-                {{ item.text }}
+                <div class="sub-div-info">
+                    <h3>{{ item.title }}</h3>
+                    <div class="sub-div-info-text">{{ item.info }}</div>
+                </div>
             </div>
         </div>
     </div>
@@ -23,13 +26,13 @@
                 </div>
             </div>
 
-            <label for="title">漫画更新</label>
+            <!-- <label for="title">漫画更新</label>
             <div class="update-box" id="comic">
             </div>
 
             <label for="title">小说更新</label>
             <div class="update-box" id="novel">
-            </div>
+            </div> -->
 
             <label for="title">音乐更新</label>
             <div class="update-box" id="music">
@@ -43,11 +46,11 @@ export default {
     data() {
         return {
             iBannerList: [
-                { text: 'Item 1', background: 'https://cdnimg.gamekee.com/wiki2.0/images/w_1600/h_1124/829/287349/2023/4/9/196838.jpg' },
-                { text: 'Item 2', background: 'https://cdnimg.gamekee.com/wiki2.0/images/w_1600/h_1124/829/287349/2023/4/9/268101.jpg' },
-                { text: 'Item 3', background: 'https://cdnimg.gamekee.com/wiki2.0/images/w_1600/h_1124/829/287349/2023/4/9/179540.jpg' },
-                { text: 'Item 4', background: 'https://cdnimg.gamekee.com/wiki2.0/images/w_1600/h_1124/829/287349/2023/4/9/138165.jpg' },
-                { text: 'Item 5', background: 'https://cdnimg.gamekee.com/wiki2.0/images/w_1600/h_1124/829/287349/2023/4/9/793597.jpg' }
+                { title: 'Item 1', info: '自从连接异次元与当前世界的通道“门”突然出现后已过去十余年，世界上出现了被称为“猎人”的，觉醒了非凡力量的人们。猎人在门内攻略地下城以获取回报以维持生计，但在强者如云的猎人中，「水篠旬」作为被称作人类最弱武器的低级猎人生活着。某一天，遭遇了隐藏在低级地下城中的高级双重地下城后，身受重伤濒临死亡的水篠旬面前出现了神秘的任务窗口。死到临头，决定接受任务的水篠旬，成为了唯一能够「升级」的人——', background: 'https://cdnimg.gamekee.com/wiki2.0/images/w_1600/h_1124/829/287349/2023/4/9/196838.jpg' },
+                { title: 'Item 2', info: '自从连接异次元与当前世界的通道“门”突然出现后已过去十余年，世界上出现了被称为“猎人”的，觉醒了非凡力量的人们。猎人在门内攻略地下城以获取回报以维持生计，但在强者如云的猎人中，「水篠旬」作为被称作人类最弱武器的低级猎人生活着。某一天，遭遇了隐藏在低级地下城中的高级双重地下城后，身受重伤濒临死亡的水篠旬面前出现了神秘的任务窗口。死到临头，决定接受任务的水篠旬，成为了唯一能够「升级」的人——', background: 'https://cdnimg.gamekee.com/wiki2.0/images/w_1600/h_1124/829/287349/2023/4/9/268101.jpg' },
+                { title: 'Item 3', info: '自从连接异次元与当前世界的通道“门”突然出现后已过去十余年，世界上出现了被称为“猎人”的，觉醒了非凡力量的人们。猎人在门内攻略地下城以获取回报以维持生计，但在强者如云的猎人中，「水篠旬」作为被称作人类最弱武器的低级猎人生活着。某一天，遭遇了隐藏在低级地下城中的高级双重地下城后，身受重伤濒临死亡的水篠旬面前出现了神秘的任务窗口。死到临头，决定接受任务的水篠旬，成为了唯一能够「升级」的人——', background: 'https://cdnimg.gamekee.com/wiki2.0/images/w_1600/h_1124/829/287349/2023/4/9/179540.jpg' },
+                { title: 'Item 4', info: 'bvbbbbbbbbbbbbbbb', background: 'https://cdnimg.gamekee.com/wiki2.0/images/w_1600/h_1124/829/287349/2023/4/9/138165.jpg' },
+                { title: 'Item 5', info: 'bbbbbbbbbbbbbbbbbb', background: 'https://cdnimg.gamekee.com/wiki2.0/images/w_1600/h_1124/829/287349/2023/4/9/793597.jpg' }
             ],
             animeList: [
                 {
@@ -85,36 +88,40 @@ export default {
         }
     },
     mounted() {
-        const ibanner = this.$refs.ibanner;
-        const subDivContainer = ibanner.querySelector('.sub-div-container');
-        const ibannerWidth = ibanner.offsetWidth;
-
-        subDivContainer.style.width = `${ibannerWidth * this.iBannerList.length}px`;
-
-        const animate = () => {
-            setTimeout(() => {
-                subDivContainer.style.transform = `translateX(-${ibannerWidth}px)`;
-                setTimeout(() => {
-                    subDivContainer.style.transition = 'transform 0s';
-                    this.iBannerList.push(this.iBannerList.shift());
-                    subDivContainer.style.transform = '';
-                    animate();
-                }, 1000);
-                subDivContainer.style.transition = 'transform 0.5s ease-out';
-            }, 2000);
-        };
-
+        this.initIbanner();
         this.setItemsHeight();
-        animate();
+
         window.addEventListener('scroll', this.handleWheel);
     },
     beforeMount() {
         window.removeEventListener('scroll', this.handleWheel);
     },
     methods: {
+        initIbanner() {
+            const ibanner = this.$refs.ibanner;
+            const subDivContainer = ibanner.querySelector('.sub-div-container');
+            const ibannerWidth = ibanner.offsetWidth;
+
+            subDivContainer.style.width = `${ibannerWidth * this.iBannerList.length}px`;
+
+            const animate = () => {
+                setTimeout(() => {
+                    subDivContainer.style.transform = `translateX(-${ibannerWidth}px)`;
+                    setTimeout(() => {
+                        subDivContainer.style.transition = 'transform 0s';
+                        this.iBannerList.push(this.iBannerList.shift());
+                        subDivContainer.style.transform = '';
+                        animate();
+                    }, 1000);
+                    subDivContainer.style.transition = 'transform 0.5s ease-out';
+                }, 2000);
+            };
+
+            animate();
+        },
         handleWheel() {
-            console.log(this.prevScrollY);
             const container = document.querySelector('.container');
+
             var containerTop = parseInt(getComputedStyle(container).top);
             const screenHeight = window.innerHeight;
 
@@ -124,7 +131,7 @@ export default {
             }
 
             if (window.scrollY > 0 && window.scrollY < 0.15 * screenHeight) {
-                containerTop = screenHeight - window.scrollY
+                containerTop = screenHeight - window.scrollY;
                 container.style.top = `${containerTop}px`;
             }
 
@@ -144,14 +151,12 @@ export default {
             const containerBox = document.querySelector('.container-box');
             const container = document.querySelector('.container');
             containerBox.style.height = `${container.offsetHeight}px`;
-
-
         }
     }
 }
 </script>
 
-<style>
+<style scoped>
 * {
     overflow-x: hidden;
 }
@@ -174,15 +179,42 @@ body {
         transition: transform 0.5s ease;
 
         .sub-div {
+            position: relative;
             overflow: hidden;
             width: 100vw;
             height: 100vh;
             color: #ffffff;
             text-align: center;
-            font-size: 54px;
-            line-height: 100vh;
+            font-size: 15px;
             background-size: cover;
             background-position: center center;
+
+
+
+            .sub-div-info {
+                width: 35vw;
+                height: 35vh;
+                overflow-y: hidden;
+                position: absolute;
+                bottom: 16vh;
+                left: 5vw;
+                padding: 15px;
+                border-radius: 15px;
+                color: black;
+                background-color: #ffffff60;
+                box-shadow: 0 12px 15px 0 rgba(0, 0, 0, 0.24), 0 17px 50px 0 rgba(0, 0, 0, 0.19);
+
+                h3 {
+                    font-size: 50px;
+                    text-overflow: ellipsis;
+                }
+
+                .sub-div-info-text {
+                    margin-bottom: 15px;
+                    height: auto;
+                    text-overflow: ellipsis;
+                }
+            }
         }
     }
 }

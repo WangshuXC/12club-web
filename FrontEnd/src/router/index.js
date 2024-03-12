@@ -41,7 +41,7 @@ const router = createRouter({
       name: 'novel',
       component: () => import('../views/NovelView.vue'),
       meta: {
-        showNavBar: true
+        showNavBar: false
       },
     },
     {
