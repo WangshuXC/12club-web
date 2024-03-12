@@ -3,8 +3,8 @@ from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 DIALECT = "mysql"
 DRIVER = "pymysql"
-USERNAME = "admin"
-PASSWORD = "123456"
+USERNAME = "root"
+PASSWORD = "12345678"
 HOST = "127.0.0.1"
 PORT = "3306"
 DATABASE = "12club"

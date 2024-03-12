@@ -4,6 +4,21 @@ from models import User,Anime
 from settings import db
 import math
 
+#login api
+class LoginApi(Resource):
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('username', type=str, required=True, help='Username is required')
+        parser.add_argument('password', type=str, required=True, help='Password is required')
+        args = parser.parse_args()
+        username = args['username']
+        password = args['password']
+        user = User.query.filter_by(username=username).first()
+        if user and user.verify_password(password):
+            return {'message': 'Login success'}, 200
+        else:
+            return {'message': 'Invalid username or password'}, 401
+
 class HomeApi(Resource):
     def get(self):
         return {'message': 'Hello, World!'}
