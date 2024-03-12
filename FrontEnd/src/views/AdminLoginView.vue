@@ -1,14 +1,15 @@
 <template>
     <div class="admin-login">
         <h1>Admin Login</h1>
-        <form @submit.prevent="login">
+        <form>
             <label for="username">Username:</label>
             <input type="text" id="username" v-model="username" placeholder="Enter your username" required>
 
             <label for="password">Password:</label>
             <input type="password" id="password" v-model="password" placeholder="Enter your password" required>
 
-            <button type="submit">Login</button>
+            <button type="login" @click="login()">Login</button>
+            <button type="signup" @click="signup()">Signup</button>
         </form>
     </div>
 </template>
@@ -37,8 +38,26 @@ export default {
                     // 处理错误逻辑
                     console.error(error);
                 });
-            // console.log('Username:', this.username);
-            // console.log('Password:', this.password);
+            console.log('Username:', this.username);
+            console.log('Password:', this.password);
+        },
+        signup() {
+            console.log('signup')
+            const formData = {
+                username: this.username,
+                password: this.password
+            };
+            axios.post(`${this.API_URL}/signup`, formData)
+                .then(response => {
+                    // 登录成功逻辑
+                    console.log(response.data);
+                })
+                .catch(error => {
+                    // 处理错误逻辑
+                    console.error(error);
+                });
+            console.log('Username:', this.username);
+            console.log('Password:', this.password);
         }
     }
 };

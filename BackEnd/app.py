@@ -3,7 +3,7 @@ from flask_cors import CORS
 from flask_restful import Api
 import settings
 from settings import db
-from apis import HomeApi, UserApi, AnimeApi_detail, AnimeApi_page, LoginApi
+from apis import HomeApi, UserApi, AnimeApi_detail, AnimeApi_page, LoginApi, SignupApi
 
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "http://localhost:6262"}})

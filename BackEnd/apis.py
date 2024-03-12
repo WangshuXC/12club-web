@@ -27,7 +27,22 @@ class LoginApi(Resource):
 
 class SignupApi(Resource):
     def post(self):
-        pass
+        parser = reqparse.RequestParser()
+        parser.add_argument(
+            "username", type=str, required=True, help="Username is required"
+        )
+        parser.add_argument(
+            "password", type=str, required=True, help="Password is required"
+        )
+        args = parser.parse_args()
+        username = args["username"]
+        password = args["password"]
+
+        user = User()
+        user.new_user(username, password)
+        db.session.add(user)
+        db.session.commit()
+        return {"message": "Signup success"}, 201
 
 
 class HomeApi(Resource):
