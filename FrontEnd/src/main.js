@@ -19,8 +19,8 @@ const vuetify = createVuetify({
 app.mixin({
   data() {
     return {
-      API_URL: 'http://loacalhost:5000/api',
-      DATA_URL: 'http://loacalhost:3000'
+      API_URL: 'http://localhost:5000/api',
+      DATA_URL: 'http://localhost:3000'
       // API_URL: 'http://api.liangxiaochu.xyz',
       // DATA_URL: 'http://data.liangxiaochu.xyz'
     }
