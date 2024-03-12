@@ -16,7 +16,6 @@
 
 <script>
 import axios from 'axios';
-import Cookies from 'vue-cookies';
 export default {
     data() {
         return {
@@ -24,13 +23,16 @@ export default {
             password: ''
         };
     },
+    mounted() {
+
+    },
     methods: {
         login() {
             const formData = {
                 username: this.username,
                 password: this.password
             };
-            axios.post(`${this.API_URL}/login`, formData, {withCredentials: true})
+            axios.post(`${this.API_URL}/login`, formData, { withCredentials: true })
                 .then(response => {
                     this.$router.push('/admin/op');
                     console.log(response);

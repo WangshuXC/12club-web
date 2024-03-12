@@ -1,26 +1,29 @@
 from flask import Flask, jsonify, request, make_response
 from flask_restful import Resource, reqparse
 from flask_jwt_extended import (
-    JWTManager, jwt_required, create_access_token, create_refresh_token,
-    get_jwt, set_access_cookies, set_refresh_cookies,
-    jwt_required
+    JWTManager,
+    jwt_required,
+    create_access_token,
+    create_refresh_token,
+    get_jwt,
+    set_access_cookies,
+    set_refresh_cookies,
+    jwt_required,
+    get_jwt_identity,
 )
 from models import User, Anime
 from settings import db
 import math
-from datetime import timedelta
-
+from datetime import timedelta, datetime
 
 
 app = Flask(__name__)
 
 # Setup the Flask-JWT-Extended
-app.config['JWT_SECRET_KEY'] = '12345678'  # Change this!
-app.config["JWT_COOKIE_SECURE"] = False
+app.config["JWT_SECRET_KEY"] = "12345678"
 jwt = JWTManager(app)
 
-app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(minutes=60) 
-app.config['JWT_REFRESH_TOKEN_EXPIRES'] = timedelta(minutes=120) 
+
 class LoginApi(Resource):
     @jwt_required(optional=True)
     def post(self):
@@ -42,29 +45,31 @@ class LoginApi(Resource):
             # Create the tokens we will be sending back to the user
             access_token = create_access_token(identity=username)
             refresh_token = create_refresh_token(identity=username)
-            
-            # Create the response
-            resp = {'login': True}
+
+            # Create the response with current time and cookie expiration times
+            current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            resp = {
+                "login": True,
+                "current_time": current_time,
+            }
             resp = make_response(jsonify(resp), 200)
-            # Set the JWT cookies in the response
 
-
-
-            set_access_cookies(resp, access_token)
-            set_refresh_cookies(resp, refresh_token)
+            set_access_cookies(resp, access_token, max_age=1)
+            set_refresh_cookies(resp, refresh_token, max_age=10)
             return resp
         else:
             return {"message": "Invalid username or password"}, 401
-        
+
+
 class RefreshTokenApi(Resource):
     @jwt_required
     def post(self):
         # Create the new access token
         current_user = get_jwt_identity()
         access_token = create_access_token(identity=current_user)
-        
+
         # Set the JWT access cookie in the response
-        resp = jsonify({'refresh': True})
+        resp = jsonify({"refresh": True})
         set_access_cookies(resp, access_token)
         return resp, 200
 
