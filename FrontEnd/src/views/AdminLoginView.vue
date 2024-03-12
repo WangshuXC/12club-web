@@ -13,6 +13,37 @@
     </div>
 </template>
 
+<script>
+import axios from 'axios';
+export default {
+    data() {
+        return {
+            username: '',
+            password: ''
+        };
+    },
+    methods: {
+        login() {
+            const formData = {
+                username: this.username,
+                password: this.password
+            };
+            axios.post(`${this.API_URL}/login`, formData)
+                .then(response => {
+                    // 登录成功逻辑
+                    console.log(response.data);
+                })
+                .catch(error => {
+                    // 处理错误逻辑
+                    console.error(error);
+                });
+            // console.log('Username:', this.username);
+            // console.log('Password:', this.password);
+        }
+    }
+};
+</script>
+
 <style scoped>
 .admin-login {
     max-width: 300px;
@@ -42,22 +73,3 @@ button {
     cursor: pointer;
 }
 </style>
-
-<script>
-export default {
-    data() {
-        return {
-            username: '',
-            password: ''
-        };
-    },
-    methods: {
-        login() {
-            // 在这里编写登录逻辑，可以通过 this.username 和 this.password 获取输入的用户名和密码
-            // 进行登录验证，例如提交表单至后端进行验证
-            console.log('Username:', this.username);
-            console.log('Password:', this.password);
-        }
-    }
-};
-</script>
