@@ -45,7 +45,6 @@ export default {
                 description: '',
                 type: '',
                 addFiles: [],
-                // ... 其他字段
             },
             coverUrl: null,
         };
@@ -61,29 +60,30 @@ export default {
         },
         showAddEditor(type) {
             this.addForm.type = type;
-            // 根据类型处理逻辑，这里简单示例
-            // 如果是动画类型，设置 showEditor 为 true
             this.showEditor = true;
         },
         addUpload() {
-            const formData = {
-                coverImage: this.addForm.coverImage,
-                title: this.addForm.title,
-                description: this.addForm.description,
-                type: this.addForm.type,
-                files: this.addForm.addFiles
-            };
-            console.log(formData);
+            var formData = new FormData();
+            formData.append('coverImage', this.addForm.coverImage);
+            formData.append('title', this.addForm.title);
+            formData.append('description', this.addForm.description);
+            formData.append('type', this.addForm.type);
+            for (var i = 0; i < this.addForm.addFiles.length; i++) {
+                formData.append('files', this.addForm.addFiles[i]);
+            }
+            console.log(formData.getAll());
+
             // 发送 POST 请求
             axios.post(`${this.API_URL}/upload`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
             })
                 .then(response => {
                     console.log(response.data);
-                    // 处理上传成功的逻辑，例如清空表单数据等
                 })
                 .catch(error => {
                     console.error(error);
-                    // 处理上传失败的逻辑
                 });
         }
     },

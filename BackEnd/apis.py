@@ -102,10 +102,36 @@ class UploadApi(Resource):
         parser = reqparse.RequestParser()
         parser.add_argument("title", type=str, required=True)
         parser.add_argument("description", type=str, required=True)
+        parser.add_argument("type", type=str, required=True)
+        # parser.add_argument("coverImage", type=FileStorage, location="files")
+        # parser.add_argument("files", type=list, location="files")
         args = parser.parse_args()
         title = args["title"]
         description = args["description"]
-        return {"message": "Files uploaded" + title + description}, 201
+        type = args["type"]
+        cover_image = args["coverImage"]
+        files = args["files"]
+
+        response = {
+            "message": "Files uploaded",
+            "title": title,
+            "description": description,
+        }
+
+        if cover_image:
+            response["cover"] = "cover!"
+            # cover_image.save("D:/", cover_image.filename)
+        else:
+            response["cover"] = "No cover!"
+
+        if files:
+            response["files"] = "files!"
+            # for file in files:
+            #     file.save("D:/", file.filename)
+        else:
+            response["files"] = "No files!"
+
+        return response, 201
 
 
 class HomeApi(Resource):
