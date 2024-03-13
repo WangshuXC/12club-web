@@ -14,7 +14,7 @@ from flask_jwt_extended import (
     get_jwt_identity,
 )
 from models import User, Anime
-from settings import db
+from settings import db, DATA_PATH
 import math
 from datetime import timedelta, datetime
 import os
@@ -99,18 +99,11 @@ class SignupApi(Resource):
 # 上传文件到data目录
 class UploadApi(Resource):
     def post(self):
-        parser = reqparse.RequestParser()
-        parser.add_argument("title", type=str)
-        parser.add_argument("description", type=str)
-        parser.add_argument("type", type=str)
-        parser.add_argument("coverImage", type=FileStorage, location="files")
-        parser.add_argument("files", type=list, location="files")
-        args = parser.parse_args()
-        title = args["title"]
-        description = args["description"]
-        type = args["type"]
-        cover_image = args["coverImage"]
-        files = args["files"]
+        title = request.form.get("title")
+        description = request.form.get("description")
+        type = request.form.get("type")
+        cover_image = request.files.get("coverImage")
+        files = request.files.getlist("files")
 
         response = {
             "message": "Files uploaded",
@@ -118,16 +111,25 @@ class UploadApi(Resource):
             "description": description,
         }
 
+        def create_directory_if_not_exists(directory):
+            if not os.path.exists(directory):
+                os.makedirs(directory)
+
         if cover_image:
             response["cover"] = "cover!"
-            # cover_image.save("D:/", cover_image.filename)
+            directory = f"{DATA_PATH}{type}\\{title}"
+            create_directory_if_not_exists(directory)
+            cover_image.save(os.path.join(directory, cover_image.filename))
         else:
             response["cover"] = "No cover!"
 
         if files:
             response["files"] = "files!"
-            # for file in files:
-            #     file.save("D:/", file.filename)
+            for file in files:
+                response["file"] = "file!"
+                directory = f"{DATA_PATH}{type}\\{title}"
+                create_directory_if_not_exists(directory)
+                file.save(os.path.join(directory, file.filename))
         else:
             response["files"] = "No files!"
 

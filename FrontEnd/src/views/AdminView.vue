@@ -63,17 +63,20 @@ export default {
             this.showEditor = true;
         },
         addUpload() {
-            var formData = new FormData();
-            formData.append('coverImage', this.addForm.coverImage);
+            const formData = new FormData();
+            formData.append('coverImage', new Blob(this.addForm.coverImage, { type: "image/jpeg" }), "Cover.jpg");
             formData.append('title', this.addForm.title);
             formData.append('description', this.addForm.description);
             formData.append('type', this.addForm.type);
             for (var i = 0; i < this.addForm.addFiles.length; i++) {
-                formData.append('files', this.addForm.addFiles[i]);
+                const file = this.addForm.addFiles[i];
+                console.log(file.type, file.name, file.size);
+                const blob = new Blob([file], { type: file.type });
+                formData.append('files', blob, file.name);
             }
 
             // 发送 POST 请求
-            axios.post(`${this.API_URL}/upload`, this.addForm.coverImage, {
+            axios.post(`${this.API_URL}/upload`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 }
