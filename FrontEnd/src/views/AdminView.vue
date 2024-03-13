@@ -8,16 +8,16 @@
         </div>
         <div class="add-editor" v-if="showEditor">
             <div>
-                <v-img v-if="coverUrl" :src="coverUrl" alt="Cover Image" max-height="250"
+                <v-img v-if="coverUrl" :src="coverUrl" alt="Cover Image" max-height="20vw"
                     style="margin-bottom: 20px ;" />
-                <v-file-input accept="image/*" label="Cover" v-model="coverImage" prepend-icon="mdi-image"
+                <v-file-input accept="image/*" label="Cover" v-model="addForm.coverImage" prepend-icon="mdi-image"
                     variant="solo" @change="handleFileUpload"></v-file-input>
-                <v-text-field label="Title" placeholder="Title" prepend-icon="mdi-pencil" variant="solo"
-                    clearable></v-text-field>
-                <v-textarea label="Description" placeholder="Description" prepend-icon="mdi-pencil" variant="solo"
-                    clearable></v-textarea>
+                <v-text-field v-model="addForm.title" label="Title" placeholder="Title" prepend-icon="mdi-pencil"
+                    variant="solo" clearable></v-text-field>
+                <v-textarea v-model="addForm.description" label="Description" placeholder="Description"
+                    prepend-icon="mdi-pencil" variant="solo" clearable></v-textarea>
             </div>
-            <v-file-input v-model="addFiles" :show-size="1024" label="File input" placeholder="按住Ctrl再点击实现多选"
+            <v-file-input v-model="addForm.addFiles" :show-size="1024" label="File input" placeholder="按住Ctrl再点击实现多选"
                 prepend-icon="mdi-paperclip" variant="solo" counter multiple>
                 <template v-slot:selection="{ fileNames }">
                     <template v-for="fileName in fileNames" :key="fileName">
@@ -27,18 +27,26 @@
                     </template>
                 </template>
             </v-file-input>
+            <v-btn @click="addUpload" style="width: 50%;margin: auto;" color="success" size="large">Add</v-btn>
         </div>
     </div>
     <div class="edit-container"></div>
 </template>
 
 <script>
+import axios from 'axios';
 export default {
     data() {
         return {
             showEditor: false,
-            addFiles: [],
-            coverImage: null,
+            addForm: {
+                coverImage: null,
+                title: '',
+                description: '',
+                type: '',
+                addFiles: [],
+                // ... 其他字段
+            },
             coverUrl: null,
         };
     },
@@ -52,13 +60,38 @@ export default {
             }
         },
         showAddEditor(type) {
+            this.addForm.type = type;
             // 根据类型处理逻辑，这里简单示例
             // 如果是动画类型，设置 showEditor 为 true
             this.showEditor = true;
         },
         addUpload() {
-            // 点击添加按钮后增加一个上传栏
-            this.uploads.push(this.uploads.length);
+            const formData = new FormData();
+            formData.append('coverImage', this.addForm.coverImage);
+            formData.append('title', this.addForm.title);
+            formData.append('description', this.addForm.description);
+            formData.append('type', this.addForm.type);
+            for (let i = 0; i < this.addForm.addFiles.length; i++) {
+                formData.append('files[]', this.addForm.addFiles[i]);
+            }
+
+            axios.post(`${this.API_URL}/upload`, formData)
+                .then(response => {
+                    // 处理成功上传后的逻辑
+                    console.log('Upload successful:', response.data);
+                    // 清空表单数据等操作
+                    this.showEditor = false;
+                    this.addForm.coverImage = null;
+                    this.addForm.title = '';
+                    this.addForm.description = '';
+                    this.addForm.addFiles = [];
+                    this.coverUrl = null;
+                })
+                .catch(error => {
+                    // 处理上传失败后的逻辑
+                    console.error('Error uploading the file:', error);
+                    // 可以给用户一些提示信息
+                });
         }
     },
 };
