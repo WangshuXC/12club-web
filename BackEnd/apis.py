@@ -105,18 +105,20 @@ class UploadApi(Resource):
         parser.add_argument('cover', type=FileStorage, location='files', required=True, help="Cover is required")
         parser.add_argument('title', type=str, required=True, help="Title is required")
         parser.add_argument('description', type=str, required=True, help="Description is required")
+        parser.add_argument('type', type=str, required=True, help="Type is required")
         args = parser.parse_args()
 
         file = args['file']
         cover = args['cover']
         title = args['title']
         description = args['description']
+        type = args['type']
 
         filename = secure_filename(file.filename)
         covername = secure_filename(cover.filename)
 
-        file.save(os.path.join('data', title, filename))
-        cover.save(os.path.join('data', title, covername))
+        file.save(os.path.join('data',type, title, filename))
+        cover.save(os.path.join('data',type, title, covername))
 
         # TODO: Save title and description to database
 
