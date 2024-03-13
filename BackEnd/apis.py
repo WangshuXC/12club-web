@@ -100,11 +100,11 @@ class SignupApi(Resource):
 class UploadApi(Resource):
     def post(self):
         parser = reqparse.RequestParser()
-        parser.add_argument("title", type=str, required=True)
-        parser.add_argument("description", type=str, required=True)
-        parser.add_argument("type", type=str, required=True)
-        # parser.add_argument("coverImage", type=FileStorage, location="files")
-        # parser.add_argument("files", type=list, location="files")
+        parser.add_argument("title", type=str)
+        parser.add_argument("description", type=str)
+        parser.add_argument("type", type=str)
+        parser.add_argument("coverImage", type=FileStorage, location="files")
+        parser.add_argument("files", type=list, location="files")
         args = parser.parse_args()
         title = args["title"]
         description = args["description"]

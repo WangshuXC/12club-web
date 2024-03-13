@@ -71,12 +71,11 @@ export default {
             for (var i = 0; i < this.addForm.addFiles.length; i++) {
                 formData.append('files', this.addForm.addFiles[i]);
             }
-            console.log(formData.getAll());
 
             // 发送 POST 请求
-            axios.post(`${this.API_URL}/upload`, formData, {
+            axios.post(`${this.API_URL}/upload`, this.addForm.coverImage, {
                 headers: {
-                    'Content-Type': 'multipart/form-data'
+                    'Content-Type': 'multipart/form-data',
                 }
             })
                 .then(response => {
