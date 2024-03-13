@@ -94,49 +94,33 @@ class SignupApi(Resource):
         db.session.add(user)
         db.session.commit()
         return {"message": "Signup success"}, 201
+    
 
-
+    
 # 上传文件到data目录
 class UploadApi(Resource):
     def post(self):
         parser = reqparse.RequestParser()
-        parser.add_argument(
-            "file",
-            type=FileStorage,
-            location="files",
-            required=True,
-            help="File is required",
-        )
-        parser.add_argument(
-            "resumableChunkNumber",
-            type=int,
-            required=True,
-            help="Chunk number is required",
-        )
-        parser.add_argument(
-            "resumableTotalChunks",
-            type=int,
-            required=True,
-            help="Total chunks is required",
-        )
+        parser.add_argument('file', type=FileStorage, location='files', required=True, help="File is required")
+        parser.add_argument('cover', type=FileStorage, location='files', required=True, help="Cover is required")
+        parser.add_argument('title', type=str, required=True, help="Title is required")
+        parser.add_argument('description', type=str, required=True, help="Description is required")
         args = parser.parse_args()
 
-        file = args["file"]
-        chunk_number = args["resumableChunkNumber"]
-        total_chunks = args["resumableTotalChunks"]
+        file = args['file']
+        cover = args['cover']
+        title = args['title']
+        description = args['description']
 
         filename = secure_filename(file.filename)
-        file.save(f"../Data/{filename}_part_{chunk_number}")
+        covername = secure_filename(cover.filename)
 
-        if chunk_number == total_chunks:
-            # All chunks have been uploaded, combine them
-            with open(f"../Data/{filename}", "wb") as full_file:
-                for i in range(1, total_chunks + 1):
-                    with open(f"../Data/{filename}_part_{i}", "rb") as part_file:
-                        full_file.write(part_file.read())
-                    os.remove(f"../Data/{filename}_part_{i}")  # Delete the chunk
+        file.save(os.path.join('data', title, filename))
+        cover.save(os.path.join('data', title, covername))
 
-        return {"message": "Chunk successfully uploaded"}, 200
+        # TODO: Save title and description to database
+
+        return {"message": "File and cover uploaded successfully, title and description saved"}, 201
 
 
 class HomeApi(Resource):
