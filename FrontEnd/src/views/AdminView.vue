@@ -3,8 +3,8 @@
 
     <div class="add-container">
         <div class="add-box">
-            <button class="add-anime" @click="showAddEditor('anime')">Add Anime</button>
-            <button class="add-music" @click="showAddEditor('music')">Add Music</button>
+            <button class="add-anime" @click="showAddEditor('Anime')">Add Anime</button>
+            <button class="add-music" @click="showAddEditor('Music')">Add Music</button>
         </div>
         <div class="add-editor" v-if="showEditor">
             <div>
@@ -66,32 +66,32 @@ export default {
             this.showEditor = true;
         },
         addUpload() {
+            console.log('addUpload:', this.addForm);
             const formData = new FormData();
             formData.append('coverImage', this.addForm.coverImage);
             formData.append('title', this.addForm.title);
             formData.append('description', this.addForm.description);
             formData.append('type', this.addForm.type);
             for (let i = 0; i < this.addForm.addFiles.length; i++) {
-                formData.append('files[]', this.addForm.addFiles[i]);
+                formData.append('files', this.addForm.addFiles[i]);
             }
 
-            axios.post(`${this.API_URL}/upload`, formData)
-                .then(response => {
-                    // 处理成功上传后的逻辑
-                    console.log('Upload successful:', response.data);
-                    // 清空表单数据等操作
-                    this.showEditor = false;
-                    this.addForm.coverImage = null;
-                    this.addForm.title = '';
-                    this.addForm.description = '';
-                    this.addForm.addFiles = [];
-                    this.coverUrl = null;
-                })
-                .catch(error => {
-                    // 处理上传失败后的逻辑
-                    console.error('Error uploading the file:', error);
-                    // 可以给用户一些提示信息
-                });
+            if (formData) {
+                axios.post(`${this.API_URL}/upload`, formData)
+                    .then(response => {
+                        console.log('Upload successful:', response.data);
+                        this.showEditor = false;
+                        this.addForm.coverImage = null;
+                        this.addForm.title = '';
+                        this.addForm.description = '';
+                        this.addForm.addFiles = [];
+                        this.coverUrl = null;
+                    })
+                    .catch(error => {
+                        console.error('Error uploading the file:', error);
+                    });
+            }
+
         }
     },
 };

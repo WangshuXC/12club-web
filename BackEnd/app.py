@@ -3,7 +3,15 @@ from flask_cors import CORS
 from flask_restful import Api
 import settings
 from settings import db
-from apis import HomeApi, UserApi, AnimeApi_detail, AnimeApi_page, LoginApi, SignupApi
+from apis import (
+    HomeApi,
+    UserApi,
+    AnimeApi_detail,
+    AnimeApi_page,
+    LoginApi,
+    SignupApi,
+    UploadApi,
+)
 from flask_jwt_extended import JWTManager
 
 
@@ -18,6 +26,7 @@ app.config.from_object(settings)
 api = Api(app)
 db.init_app(app)
 
+api.add_resource(UploadApi, "/api/upload", endpoint="upload")
 api.add_resource(LoginApi, "/api/login", endpoint="login")
 api.add_resource(SignupApi, "/api/signup", endpoint="signup")
 api.add_resource(HomeApi, "/api")

@@ -94,35 +94,54 @@ class SignupApi(Resource):
         db.session.add(user)
         db.session.commit()
         return {"message": "Signup success"}, 201
-    
 
-    
+
 # 上传文件到data目录
 class UploadApi(Resource):
     def post(self):
         parser = reqparse.RequestParser()
-        parser.add_argument('file', type=FileStorage, location='files', required=True, help="File is required")
-        parser.add_argument('cover', type=FileStorage, location='files', required=True, help="Cover is required")
-        parser.add_argument('title', type=str, required=True, help="Title is required")
-        parser.add_argument('description', type=str, required=True, help="Description is required")
-        parser.add_argument('type', type=str, required=True, help="Type is required")
-        args = parser.parse_args()
+        parser.add_argument(
+            "coverImage",
+            location="files",
+            help="Cover image is required",
+        )
+        # parser.add_argument("title", type=str, required=True, help="Title is required")
+        # parser.add_argument(
+        #     "description", type=str, required=True, help="Description is required"
+        # )
+        # parser.add_argument("type", type=str, required=True, help="Type is required")
+        # parser.add_argument(
+        #     "files",
+        #     type=str,
+        #     location="files",
+        #     action="append",
+        #     required=True,
+        #     help="Files are required",
+        # )
+        # args = parser.parse_args()
 
-        file = args['file']
-        cover = args['cover']
-        title = args['title']
-        description = args['description']
-        type = args['type']
+        cover_file = request.files["coverImage"]
+        # title = args["title"]
+        # description = args["description"]
+        # file_type = args["type"]
+        # files = request.files.getlist("files")
 
-        filename = secure_filename(file.filename)
-        covername = secure_filename(cover.filename)
+        # Save cover image
+        cover_filename = secure_filename(cover_file.filename)
+        cover_file.save(os.path.join(app.config["UPLOAD_FOLDER"], cover_filename))
 
-        file.save(os.path.join('data',type, title, filename))
-        cover.save(os.path.join('data',type, title, covername))
+        # Save additional files
+        # for file in files:
+        #     filename = secure_filename(file.filename)
+        #     file.save(
+        #         os.path.join(
+        #             os.path.join(os.path.dirname(__file__), "uploads"), filename
+        #         )
+        #     )
 
-        # TODO: Save title and description to database
+        # TODO: Save title, description, type and files to database
 
-        return {"message": "File and cover uploaded successfully, title and description saved"}, 201
+        return {"message": "Files uploaded successfully"}, 201
 
 
 class HomeApi(Resource):
