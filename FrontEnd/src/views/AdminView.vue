@@ -66,32 +66,25 @@ export default {
             this.showEditor = true;
         },
         addUpload() {
-            console.log('addUpload:', this.addForm);
-            const formData = new FormData();
-            formData.append('coverImage', this.addForm.coverImage);
-            formData.append('title', this.addForm.title);
-            formData.append('description', this.addForm.description);
-            formData.append('type', this.addForm.type);
-            for (let i = 0; i < this.addForm.addFiles.length; i++) {
-                formData.append('files', this.addForm.addFiles[i]);
-            }
-
-            if (formData) {
-                axios.post(`${this.API_URL}/upload`, formData)
-                    .then(response => {
-                        console.log('Upload successful:', response.data);
-                        this.showEditor = false;
-                        this.addForm.coverImage = null;
-                        this.addForm.title = '';
-                        this.addForm.description = '';
-                        this.addForm.addFiles = [];
-                        this.coverUrl = null;
-                    })
-                    .catch(error => {
-                        console.error('Error uploading the file:', error);
-                    });
-            }
-
+            const formData = {
+                coverImage: this.addForm.coverImage,
+                title: this.addForm.title,
+                description: this.addForm.description,
+                type: this.addForm.type,
+                files: this.addForm.addFiles
+            };
+            console.log(formData);
+            // 发送 POST 请求
+            axios.post(`${this.API_URL}/upload`, formData, {
+            })
+                .then(response => {
+                    console.log(response.data);
+                    // 处理上传成功的逻辑，例如清空表单数据等
+                })
+                .catch(error => {
+                    console.error(error);
+                    // 处理上传失败的逻辑
+                });
         }
     },
 };

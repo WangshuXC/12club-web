@@ -100,48 +100,12 @@ class SignupApi(Resource):
 class UploadApi(Resource):
     def post(self):
         parser = reqparse.RequestParser()
-        parser.add_argument(
-            "coverImage",
-            location="files",
-            help="Cover image is required",
-        )
-        # parser.add_argument("title", type=str, required=True, help="Title is required")
-        # parser.add_argument(
-        #     "description", type=str, required=True, help="Description is required"
-        # )
-        # parser.add_argument("type", type=str, required=True, help="Type is required")
-        # parser.add_argument(
-        #     "files",
-        #     type=str,
-        #     location="files",
-        #     action="append",
-        #     required=True,
-        #     help="Files are required",
-        # )
-        # args = parser.parse_args()
-
-        cover_file = request.files["coverImage"]
-        # title = args["title"]
-        # description = args["description"]
-        # file_type = args["type"]
-        # files = request.files.getlist("files")
-
-        # Save cover image
-        cover_filename = secure_filename(cover_file.filename)
-        cover_file.save(os.path.join(app.config["UPLOAD_FOLDER"], cover_filename))
-
-        # Save additional files
-        # for file in files:
-        #     filename = secure_filename(file.filename)
-        #     file.save(
-        #         os.path.join(
-        #             os.path.join(os.path.dirname(__file__), "uploads"), filename
-        #         )
-        #     )
-
-        # TODO: Save title, description, type and files to database
-
-        return {"message": "Files uploaded successfully"}, 201
+        parser.add_argument("title", type=str, required=True)
+        parser.add_argument("description", type=str, required=True)
+        args = parser.parse_args()
+        title = args["title"]
+        description = args["description"]
+        return {"message": "Files uploaded" + title + description}, 201
 
 
 class HomeApi(Resource):
