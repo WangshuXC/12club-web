@@ -17,7 +17,7 @@ from models import User, Anime
 from settings import db
 import math
 from datetime import timedelta, datetime
-import os 
+import os
 
 
 app = Flask(__name__)
