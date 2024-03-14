@@ -133,6 +133,18 @@ class UploadApi(Resource):
         else:
             response["files"] = "No files!"
 
+        anime = Anime(
+            title=title,
+            episode_count=len(files),
+            description=description,
+            release_date="2021-01-01",
+            update_date="2021-01-01",
+            view_count=0,
+            download_count=0,
+        )
+        db.session.add(anime)
+        db.session.commit()
+
         return response, 201
 
 
