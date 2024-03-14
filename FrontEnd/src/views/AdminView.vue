@@ -17,7 +17,7 @@
                     variant="solo" clearable></v-text-field>
                 <v-text-field v-if="addForm.type === 'Anime'" v-model="addForm.anotherTitle" label="AnotherTitle"
                     placeholder="输入动漫别名" prepend-icon="mdi-pencil" variant="solo" clearable></v-text-field>
-                <v-text-field v-if="addForm.type === 'Anime'" v-model="addForm.japansesTitle" label="JapansesTitle"
+                <v-text-field v-if="addForm.type === 'Anime'" v-model="addForm.japaneseTitle" label="japaneseTitle"
                     placeholder="输入动漫日文标题" prepend-icon="mdi-pencil" variant="solo" clearable></v-text-field>
                 <v-textarea v-model="addForm.description" label="Description" placeholder="输入动漫简介"
                     prepend-icon="mdi-pencil" variant="solo" clearable></v-textarea>
@@ -81,7 +81,7 @@ export default {
                 coverImage: null,
                 title: '',
                 anotherTitle: '',
-                japansesTitle: '',
+                japaneseTitle: '',
                 description: '',
                 type: '',
                 addFiles: [],
@@ -112,7 +112,7 @@ export default {
             formData.append('coverImage', new Blob(this.addForm.coverImage, { type: "image/jpeg" }), "Cover.jpg");
             formData.append('title', this.addForm.title);
             formData.append('anotherTitle', this.addForm.anotherTitle);
-            formData.append('japansesTitle', this.addForm.japansesTitle);
+            formData.append('japaneseTitle', this.addForm.japaneseTitle);
             formData.append('description', this.addForm.description);
             formData.append('type', this.addForm.type);
             for (var i = 0; i < this.addForm.addFiles.length; i++) {
@@ -135,6 +135,8 @@ export default {
                     this.addForm = {
                         coverImage: null,
                         title: '',
+                        anotherTitle: '',
+                        japaneseTitle: '',
                         description: '',
                         type: '',
                         addFiles: [],
