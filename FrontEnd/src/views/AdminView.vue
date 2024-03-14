@@ -11,15 +11,19 @@
             <div>
                 <v-img v-if="coverUrl" :src="coverUrl" alt="Cover Image" max-height="20vw"
                     style="margin-bottom: 20px ;" />
-                <v-file-input accept="image/*" label="Cover" v-model="addForm.coverImage" prepend-icon="mdi-image"
-                    variant="solo" @change="handleFileUpload"></v-file-input>
-                <v-text-field v-model="addForm.title" label="Title" placeholder="Title" prepend-icon="mdi-pencil"
+                <v-file-input accept="image/*" label="Cover" v-model="addForm.coverImage" prepend-icon="mdi-paperclip"
+                    variant="solo-filled" @change="handleFileUpload"></v-file-input>
+                <v-text-field v-model="addForm.title" label="Title" placeholder="输入动漫标题" prepend-icon="mdi-pencil"
                     variant="solo" clearable></v-text-field>
-                <v-textarea v-model="addForm.description" label="Description" placeholder="Description"
+                <v-text-field v-if="addForm.type === 'Anime'" v-model="addForm.anotherTitle" label="AnotherTitle"
+                    placeholder="输入动漫别名" prepend-icon="mdi-pencil" variant="solo" clearable></v-text-field>
+                <v-text-field v-if="addForm.type === 'Anime'" v-model="addForm.japansesTitle" label="JapansesTitle"
+                    placeholder="输入动漫日文标题" prepend-icon="mdi-pencil" variant="solo" clearable></v-text-field>
+                <v-textarea v-model="addForm.description" label="Description" placeholder="输入动漫简介"
                     prepend-icon="mdi-pencil" variant="solo" clearable></v-textarea>
             </div>
             <v-file-input v-model="addForm.addFiles" :show-size="1024" label="File input" placeholder="按住Ctrl再点击实现多选"
-                prepend-icon="mdi-paperclip" variant="solo" counter multiple>
+                prepend-icon="mdi-paperclip" variant="solo-filled" counter multiple>
                 <template v-slot:selection="{ fileNames }">
                     <template v-for="fileName in fileNames" :key="fileName">
                         <v-chip class="me-2" color="deep-purple-accent-4" size="small" label>
@@ -42,7 +46,7 @@
                 </template>
 
                 <v-card>
-                    <v-card-title class="text-h4" style="margin: auto;">
+                    <v-card-title class="text-h4" style="margin: auto;margin-top: 20px;">
                         Make sure your file-list's order is right
                     </v-card-title>
                     <v-spacer></v-spacer>
@@ -76,6 +80,8 @@ export default {
             addForm: {
                 coverImage: null,
                 title: '',
+                anotherTitle: '',
+                japansesTitle: '',
                 description: '',
                 type: '',
                 addFiles: [],
@@ -105,6 +111,8 @@ export default {
             const formData = new FormData();
             formData.append('coverImage', new Blob(this.addForm.coverImage, { type: "image/jpeg" }), "Cover.jpg");
             formData.append('title', this.addForm.title);
+            formData.append('anotherTitle', this.addForm.anotherTitle);
+            formData.append('japansesTitle', this.addForm.japansesTitle);
             formData.append('description', this.addForm.description);
             formData.append('type', this.addForm.type);
             for (var i = 0; i < this.addForm.addFiles.length; i++) {
