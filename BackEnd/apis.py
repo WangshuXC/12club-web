@@ -125,16 +125,23 @@ class UploadApi(Resource):
         else:
             response["cover"] = "No cover!"
 
+        CHUNK_SIZE = 4096  # 你可以根据你的需要调整这个值
+
         if files:
             response["files"] = "files!"
             for file in files:
                 response["file"] = "file!"
                 directory = f"{DATA_PATH}{type}\\{title}"
                 create_directory_if_not_exists(directory)
-                file.save(os.path.join(directory, file.filename))
+                file_path = os.path.join(directory, file.filename)
+                with open(file_path, 'wb') as f:
+                    chunk = file.read(CHUNK_SIZE)
+                    while len(chunk) > 0:
+                        f.write(chunk)
+                        chunk = file.read(CHUNK_SIZE)
         else:
             response["files"] = "No files!"
-
+        
         anime = Anime(
             title=title,
             episode_count=len(files),
@@ -148,9 +155,8 @@ class UploadApi(Resource):
         )
         db.session.add(anime)
         db.session.commit()
-
+        
         return response, 201
-
 
 class HomeApi(Resource):
     def get(self):
