@@ -15,4 +15,4 @@ SQLALCHEMY_TRACK_MODIFICATIONS = False
 SQLALCHEMY_ECHO = False
 
 # 文件保存路径
-DATA_PATH = "D:\\Codefile\\12Club\\Data\\"
+DATA_PATH = "./Data/"
