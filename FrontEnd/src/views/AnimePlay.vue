@@ -17,7 +17,7 @@
 
                 <div class="number-list">
                     <div v-for="(item, index) in episodeNameList" :key="index" class="number-list-item"
-                        :class="{ current: index + 1 == currentEpisode }">
+                        @click="currentEpisode = index + 1" :class="{ current: index + 1 == currentEpisode }">
                         {{ item }}
                     </div>
                 </div>
@@ -120,7 +120,7 @@ export default {
     },
     mounted() {
         // this.initBangumiData();
-        this.initPlayer();
+        // this.initPlayer();
         this.$nextTick(() => {
             var introduction = this.$refs.introductionRef;
             if (introduction.scrollHeight > introduction.clientHeight) {
@@ -144,22 +144,24 @@ export default {
             axios.get(requestUrl)
                 .then(response => {
                     this.title = response.data.title;
-                    this.videoUrl = `${this.DATA_URL}/anime/${response.data.title}/1.mp4`
-                    this.coverUrl = `${this.DATA_URL}/anime/${response.data.title}/Cover.jpg`
+                    this.videoUrl = `${this.DATA_URL}/Anime/${response.data.title}/${this.currentEpisode}.mp4`;
+                    this.coverUrl = `${this.DATA_URL}/Anime/${response.data.title}/Cover.jpg`;
                     this.episode = response.data.episode_count;
                     this.description = response.data.description;
                     this.isOver = response.data.isover;
                     this.update_date = response.data.update_date.replace('T', ' ');
                     this.view_count = response.data.view_count;
                     this.download_count = response.data.download_count;
+                    this.initPlayer();
                 })
                 .catch(error => {
                     console.error("There was an error fetching the anime data:", error);
                 });
         },
         initPlayer() {
+            console.log('url:' + this.videoUrl);
             this.player = new Plyr('#player', {
-                controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'settings', 'download', 'pip', 'fullscreen'],
+                controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'settings', 'download', 'fullscreen'],
                 speed: { selected: 1, options: [0.5, 0.75, 1, 1.25, 1.5, 2] },
                 autoplay: false,
             });

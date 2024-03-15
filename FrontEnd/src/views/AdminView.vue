@@ -39,8 +39,8 @@
                         Add
                     </v-btn>
 
-                    <v-btn @click="this.showEditor = false" style="width: 50%; margin: auto;margin-top: 30px;"
-                        color="error" size="large">
+                    <v-btn @click="showEditor = false; addForm.type = ''"
+                        style="width: 50%; margin: auto;margin-top: 30px;" color="error" size="large">
                         Cancel
                     </v-btn>
                 </template>
@@ -165,7 +165,7 @@ export default {
         display: flex;
         justify-content: space-around;
         width: 100%;
-        height: 10vh;
+        height: auto;
     }
 
     .add-editor {
