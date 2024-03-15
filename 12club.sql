@@ -89,6 +89,7 @@ CREATE TABLE `anime_comment`  (
   `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
   `anime_id` int(11) NOT NULL,
   `content` varchar(4095) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `create_date` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP(0),
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `id`(`id`) USING BTREE,
   INDEX `comment_anime`(`anime_id`) USING BTREE,

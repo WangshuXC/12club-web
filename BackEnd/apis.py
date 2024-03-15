@@ -183,7 +183,8 @@ class CommentApi(Resource):
             }
             for comment in comments
         ]
-        return {"comments": result}
+        count = len(result)
+        return {"comments": result, "count": count}
 
 
 class HomeApi(Resource):
