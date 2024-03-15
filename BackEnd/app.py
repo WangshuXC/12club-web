@@ -11,6 +11,7 @@ from apis import (
     LoginApi,
     SignupApi,
     UploadApi,
+    CommentApi,
 )
 from flask_jwt_extended import JWTManager
 
@@ -40,6 +41,7 @@ api.add_resource(
     endpoint="anime_page",
 )
 api.add_resource(UserApi, "/api/user")
+api.add_resource(CommentApi, "/api/comment", endpoint="comment")
 
 
 if __name__ == "__main__":

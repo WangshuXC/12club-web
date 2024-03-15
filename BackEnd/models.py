@@ -38,5 +38,4 @@ class Comment(db.Model):
     anime_id = db.Column(db.Integer, db.ForeignKey('anime.id'), nullable=False)
     content = db.Column(db.String(4095), nullable=False)
     create_date = db.Column(db.DateTime, nullable=False)
-    update_date = db.Column(db.DateTime, nullable=False)
     anime = db.relationship('Anime', backref=db.backref('comments', lazy='dynamic'))

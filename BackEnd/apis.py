@@ -13,7 +13,7 @@ from flask_jwt_extended import (
     jwt_required,
     get_jwt_identity,
 )
-from models import User, Anime
+from models import User, Anime, Comment
 from settings import db, DATA_PATH
 import math
 from datetime import timedelta, datetime
@@ -125,23 +125,16 @@ class UploadApi(Resource):
         else:
             response["cover"] = "No cover!"
 
-        CHUNK_SIZE = 4096  # 你可以根据你的需要调整这个值
-
         if files:
             response["files"] = "files!"
             for file in files:
                 response["file"] = "file!"
                 directory = f"{DATA_PATH}{type}\\{title}"
                 create_directory_if_not_exists(directory)
-                file_path = os.path.join(directory, file.filename)
-                with open(file_path, 'wb') as f:
-                    chunk = file.read(CHUNK_SIZE)
-                    while len(chunk) > 0:
-                        f.write(chunk)
-                        chunk = file.read(CHUNK_SIZE)
+                file.save(os.path.join(directory, file.filename))
         else:
             response["files"] = "No files!"
-        
+
         anime = Anime(
             title=title,
             episode_count=len(files),
@@ -155,8 +148,39 @@ class UploadApi(Resource):
         )
         db.session.add(anime)
         db.session.commit()
-        
+
         return response, 201
+    
+class CommentApi(Resource):
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument(
+            "anime_id", type=int, required=True, help="Anime ID is required"
+        )
+        parser.add_argument(
+            "content", type=str, required=True, help="Content is required"
+        )
+        args = parser.parse_args()
+        anime_id = args["anime_id"]
+        content = args["content"]
+        create_date = datetime.now()
+        comment = Comment(anime_id=anime_id, content=content, create_date=create_date)
+        db.session.add(comment)
+        db.session.commit()
+        return {"message": "Comment added successfully"}, 201
+
+    def get(self, anime_id):
+        comments = Comment.query.filter_by(anime_id=anime_id).all()
+        result = [
+            {
+                "id": comment.id,
+                "content": comment.content,
+                "create_date": comment.create_date.isoformat(),
+            }
+            for comment in comments
+        ]
+        return {"comments": result}
+
 
 class HomeApi(Resource):
     def get(self):
