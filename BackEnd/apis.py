@@ -13,7 +13,7 @@ from flask_jwt_extended import (
     jwt_required,
     get_jwt_identity,
 )
-from models import User, Anime
+from models import User, Anime, Comment
 from settings import db, DATA_PATH
 import math
 from datetime import timedelta, datetime
@@ -26,7 +26,7 @@ app = Flask(__name__)
 app.config["JWT_SECRET_KEY"] = "12345678"
 jwt = JWTManager(app)
 
-
+# 用户登录，生成access_token和refresh_token
 class LoginApi(Resource):
     @jwt_required(optional=True)
     def post(self):
@@ -63,7 +63,7 @@ class LoginApi(Resource):
         else:
             return {"message": "Invalid username or password"}, 401
 
-
+# 刷新access_token
 class RefreshTokenApi(Resource):
     @jwt_required
     def post(self):
@@ -76,7 +76,7 @@ class RefreshTokenApi(Resource):
         set_access_cookies(resp, access_token)
         return resp, 200
 
-
+# 用户注册
 class SignupApi(Resource):
     def post(self):
         parser = reqparse.RequestParser()
@@ -96,11 +96,13 @@ class SignupApi(Resource):
         return {"message": "Signup success"}, 201
 
 
-# 上传文件到data目录
+# 上传文件到data目录，并保存文件信息到数据库
 class UploadApi(Resource):
     def post(self):
         title = request.form.get("title")
         description = request.form.get("description")
+        another_title = request.form.get("anotherTitle")
+        japanese_title = request.form.get("japaneseTitle")
         type = request.form.get("type")
         cover_image = request.files.get("coverImage")
         files = request.files.getlist("files")
@@ -137,6 +139,8 @@ class UploadApi(Resource):
             title=title,
             episode_count=len(files),
             description=description,
+            title_another=another_title,
+            title_japanese=japanese_title,
             release_date="2021-01-01",
             update_date="2021-01-01",
             view_count=0,
@@ -146,6 +150,36 @@ class UploadApi(Resource):
         db.session.commit()
 
         return response, 201
+    
+class CommentApi(Resource):
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument(
+            "anime_id", type=int, required=True, help="Anime ID is required"
+        )
+        parser.add_argument(
+            "content", type=str, required=True, help="Content is required"
+        )
+        args = parser.parse_args()
+        anime_id = args["anime_id"]
+        content = args["content"]
+        create_date = datetime.now()
+        comment = Comment(anime_id=anime_id, content=content, create_date=create_date)
+        db.session.add(comment)
+        db.session.commit()
+        return {"message": "Comment added successfully"}, 201
+
+    def get(self, anime_id):
+        comments = Comment.query.filter_by(anime_id=anime_id).all()
+        result = [
+            {
+                "id": comment.id,
+                "content": comment.content,
+                "create_date": comment.create_date.isoformat(),
+            }
+            for comment in comments
+        ]
+        return {"comments": result}
 
 
 class HomeApi(Resource):
@@ -238,21 +272,6 @@ class AnimeApi_detail(Resource):
                 for anime in anime_list
             ]
 
-    def post(self):
-        # 创建新的动漫信息
-        data = request.json
-        anime = Anime(
-            title=data["title"],
-            description=data["description"],
-            release_date=data["release_date"],
-            update_date=data.get("update_date"),
-            view_count=data.get("view_count", 0),
-            download_count=data.get("download_count", 0),
-        )
-        db.session.add(anime)
-        db.session.commit()
-        return {"message": "Anime created successfully"}, 201
-
     def put(self, anime_id):
         # 更新动漫信息
         anime = Anime.query.get(anime_id)
@@ -260,6 +279,8 @@ class AnimeApi_detail(Resource):
             data = request.json
             anime.title = data.get("title", anime.title)
             anime.description = data.get("description", anime.description)
+            anime.title_another = data.get("title_another", anime.title_another)
+            anime.title_japanese = data.get("title_japanese", anime.title_japanese)
             anime.release_date = data.get("release_date", anime.release_date)
             anime.update_date = data.get("update_date", anime.update_date)
             anime.view_count = data.get("view_count", anime.view_count)

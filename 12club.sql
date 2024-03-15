@@ -11,7 +11,7 @@
  Target Server Version : 50726
  File Encoding         : 65001
 
- Date: 14/03/2024 09:51:53
+ Date: 15/03/2024 00:02:12
 */
 
 SET NAMES utf8mb4;
@@ -34,7 +34,7 @@ CREATE TABLE `anime`  (
   `view_count` int(11) NOT NULL DEFAULT 0,
   `download_count` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = MyISAM AUTO_INCREMENT = 44 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 44 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of anime
@@ -82,6 +82,20 @@ INSERT INTO `anime` VALUES (40, 0, '五等分的新娘', NULL, NULL, NULL, 0, '2
 INSERT INTO `anime` VALUES (41, 0, '夏日重现', NULL, NULL, NULL, 0, '2024-02-06 07:33:18', '2024-02-06 15:22:38', 192, 1827);
 
 -- ----------------------------
+-- Table structure for anime_comment
+-- ----------------------------
+DROP TABLE IF EXISTS `anime_comment`;
+CREATE TABLE `anime_comment`  (
+  `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `anime_id` int(11) NOT NULL,
+  `content` varchar(4095) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `id`(`id`) USING BTREE,
+  INDEX `comment_anime`(`anime_id`) USING BTREE,
+  CONSTRAINT `comment_anime` FOREIGN KEY (`anime_id`) REFERENCES `anime` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_unicode_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
 -- Table structure for music
 -- ----------------------------
 DROP TABLE IF EXISTS `music`;
@@ -89,7 +103,7 @@ CREATE TABLE `music`  (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = MyISAM AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for user
@@ -100,7 +114,7 @@ CREATE TABLE `user`  (
   `username` varchar(255) CHARACTER SET macce COLLATE macce_general_ci NOT NULL,
   `password` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = MyISAM AUTO_INCREMENT = 4 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of user
