@@ -21,7 +21,7 @@
             <div v-for="(item, index) in bangumiList" :key="index" class="bangumi-box">
                 <a :href="'/animeplay/' + item.id" class="bangumi-url" :alt="item.title">
                     <div class="bangumi-img"
-                        :style="item.cover !== 'NULL' ? { 'background-image': `url(${this.DATA_URL}/anime/` + encodeURIComponent(item.title) + '/' + encodeURIComponent(item.cover) + ')' } : { 'background-image': 'url(http://127.0.0.1:3000/anime/Cover.jpg)' }">
+                        :style="item.cover !== 'NULL' ? { 'background-image': `url(${this.DATA_URL}/anime/` + encodeURIComponent(item.title) + '/Cover.jpg' + ')' } : { 'background-image': 'url(http://127.0.0.1:3000/anime/Cover.jpg)' }">
                     </div>
                 </a>
                 <div class="bangumi-info">

@@ -26,6 +26,7 @@ app = Flask(__name__)
 app.config["JWT_SECRET_KEY"] = "12345678"
 jwt = JWTManager(app)
 
+
 # 用户登录，生成access_token和refresh_token
 class LoginApi(Resource):
     @jwt_required(optional=True)
@@ -63,6 +64,7 @@ class LoginApi(Resource):
         else:
             return {"message": "Invalid username or password"}, 401
 
+
 # 刷新access_token
 class RefreshTokenApi(Resource):
     @jwt_required
@@ -75,6 +77,7 @@ class RefreshTokenApi(Resource):
         resp = jsonify({"refresh": True})
         set_access_cookies(resp, access_token)
         return resp, 200
+
 
 # 用户注册
 class SignupApi(Resource):
@@ -150,7 +153,8 @@ class UploadApi(Resource):
         db.session.commit()
 
         return response, 201
-    
+
+
 class CommentApi(Resource):
     def post(self):
         parser = reqparse.RequestParser()
@@ -223,7 +227,6 @@ class AnimeApi_page(Resource):
                 {
                     "id": anime.id,
                     "title": anime.title,
-                    "cover": anime.cover,
                 }
                 for anime in anime_page_list
             ]

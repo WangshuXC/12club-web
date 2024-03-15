@@ -1,7 +1,7 @@
 <template>
     <div class="animeplay-container">
         <div class="video-player">
-            <video id="player" playsinline controls>
+            <video id="player" ref="player" playsinline controls>
                 <source :src="videoUrl">
             </video>
         </div>
@@ -16,8 +16,8 @@
                 </div>
 
                 <div class="number-list">
-                    <div v-for="(item, index) in episodeNameList" :key="index" class="number-list-item"
-                        @click="currentEpisode = index + 1" :class="{ current: index + 1 == currentEpisode }">
+                    <div v-for="(item, index) in episode" :key="index" class="number-list-item"
+                        @click="changeSource(index)" :class="{ current: index + 1 == currentEpisode }">
                         {{ item }}
                     </div>
                 </div>
@@ -30,7 +30,7 @@
                 </div>
 
                 <div class="number-list" @mousedown="handleMouseDown">
-                    <div v-for="(item, index) in episodeNameList" :key="index" class="number-list-item"
+                    <div v-for="(item, index) in episode" :key="index" class="number-list-item"
                         :class="{ 'current': downloadedIndex.includes(index) }" @click="Download(index)"
                         @mousemove="handleMouseMove(index)" @mouseup="handleMouseUp">
                         {{ item }}
@@ -100,7 +100,7 @@ export default {
             coverUrl: '',
             replyBoxBgColor: '#f1f2f3',
             isClickedTextarea: false,
-            episode: 10,
+            episode: 1,
             currentEpisode: 1,
             episodeNameList: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
             downloadedIndex: [],
@@ -144,7 +144,7 @@ export default {
             axios.get(requestUrl)
                 .then(response => {
                     this.title = response.data.title;
-                    this.videoUrl = `${this.DATA_URL}/Anime/${response.data.title}/${this.currentEpisode}.mp4`;
+                    this.videoUrl = `${this.DATA_URL}/Anime/${this.title}/${this.currentEpisode}.mp4`;
                     this.coverUrl = `${this.DATA_URL}/Anime/${response.data.title}/Cover.jpg`;
                     this.episode = response.data.episode_count;
                     this.description = response.data.description;
@@ -159,12 +159,25 @@ export default {
                 });
         },
         initPlayer() {
-            console.log('url:' + this.videoUrl);
             this.player = new Plyr('#player', {
                 controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'settings', 'download', 'fullscreen'],
                 speed: { selected: 1, options: [0.5, 0.75, 1, 1.25, 1.5, 2] },
                 autoplay: false,
             });
+        },
+        changeSource(index) {
+            this.currentEpisode = index + 1;
+            this.videoUrl = `${this.DATA_URL}/Anime/${this.title}/${this.currentEpisode}.mp4`;
+            this.player.source = {
+                type: 'video',
+                sources: [
+                    {
+                        src: `${this.DATA_URL}/Anime/${this.title}/${this.currentEpisode}.mp4`,
+                        type: 'video/mp4',
+                    },
+                ],
+            };
+            this.player.play();
         },
         Download(index) {
             if (this.downloadedIndex.includes(index)) {
