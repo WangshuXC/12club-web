@@ -35,7 +35,8 @@
             <!-- <v-btn @click="dialog = !dialog" style="width: 50%;margin: auto;" color="success" size="large">Add</v-btn> -->
             <v-dialog v-model="dialog" max-width="50%" persistent>
                 <template v-slot:activator="{ props: activatorProps }">
-                    <v-btn v-bind="activatorProps" style="width: 50%; margin: auto;" color="success" size="large">
+                    <v-btn v-bind="activatorProps" style="width: 50%; margin: auto;" color="success" size="large"
+                        @click="sortFile()">
                         Add
                     </v-btn>
 
@@ -102,6 +103,12 @@ export default {
         showAddEditor(type) {
             this.addForm.type = type;
             this.showEditor = true;
+        },
+        sortFile() {
+            console.log(this.addForm.addFiles);
+            this.addForm.addFiles.sort((a, b) => a.name.localeCompare(b.name));
+            console.log('-----------------');
+            console.log(this.addForm.addFiles);
         },
         addUpload() {
             // this.addForm.addFiles.sort((a, b) => {

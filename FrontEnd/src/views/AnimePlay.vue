@@ -82,6 +82,22 @@
                     </div>
                 </div>
 
+                <div class="comment-box">
+                    <div class="comment-item" v-for="item in commentList" :key="item.id">
+                        <div class="comment-item-header">
+                            <p class="username" v-show="item.username !== ''">{{ item.username }}</p>
+                            <p class="ip">@{{ item.ip }}</p>
+                        </div>
+                        <div class="comment-item-content">
+                            <p>{{ item.content }}</p>
+                        </div>
+                        <div class="comment-item-info">
+                            <p class="time">{{ item.time }}</p>
+                        </div>
+                        <v-divider class="bottom-line"></v-divider>
+                    </div>
+                </div>
+
                 <div class="white"></div>
             </div>
         </div>
@@ -113,6 +129,22 @@ export default {
             view_count: 6666,
             download_count: 666,
             description: ``,
+            commentList: [
+                {
+                    id: 1,
+                    username: "",
+                    ip: "114.514",
+                    content: "为什么要演奏春日影！！！",
+                    time: "2024-02-06 15:22:38",
+                },
+                {
+                    id: 2,
+                    username: "username2",
+                    ip: "666.777",
+                    content: "你只考虑自己",
+                    time: "2024-02-06 15:22:38",
+                }
+            ],
         };
     },
     beforeMount() {
@@ -160,9 +192,10 @@ export default {
         },
         initPlayer() {
             this.player = new Plyr('#player', {
-                controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'settings', 'download', 'fullscreen'],
+                controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'settings', 'fullscreen'],
                 speed: { selected: 1, options: [0.5, 0.75, 1, 1.25, 1.5, 2] },
                 autoplay: false,
+                keyboard: { focused: true, global: true },
             });
         },
         changeSource(index) {
@@ -472,6 +505,53 @@ export default {
 
                 .send-btn:hover {
                     background-color: #00a1d6;
+                }
+            }
+        }
+
+        .comment-box {
+
+            .comment-item {
+                padding-top: 20px;
+
+                .comment-item-header {
+                    display: flex;
+                    justify-content: flex-start;
+                    align-items: center;
+                    margin-bottom: 4px;
+
+                    .username {
+                        margin-right: 10px;
+                        font-size: 14px;
+                        color: #18191c;
+                    }
+
+                    .ip {
+                        font-size: 14px;
+                        color: #9499a0;
+                    }
+                }
+
+                .comment-item-content {
+                    padding: 2px;
+                    padding-left: 0px;
+                    font-size: 15px;
+                    line-height: 24px;
+                    color: #18191c;
+                    margin-bottom: 6px;
+                }
+
+                .comment-item-info {
+                    display: flex;
+                    justify-content: flex-start;
+                    align-items: center;
+
+                    font-size: 13px;
+                    color: #9499a0;
+                }
+
+                .bottom-line {
+                    margin-top: 14px;
                 }
             }
         }
