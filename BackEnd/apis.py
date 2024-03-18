@@ -154,7 +154,60 @@ class UploadApi(Resource):
 
         return response, 201
 
+class UpdateApi(Resource):
+    def post(self, anime_id):
+        anime = Anime.query.get(anime_id)
+        if anime:
+            title = request.form.get("title")
+            description = request.form.get("description")
+            another_title = request.form.get("anotherTitle")
+            japanese_title = request.form.get("japaneseTitle")
+            release_date = request.form.get("releaseDate")
+            update_date = request.form.get("updateDate")
+            view_count = request.form.get("viewCount")
+            download_count = request.form.get("downloadCount")
+            cover_image = request.files.get("coverImage")
+            files = request.files.getlist("files")
 
+            if title:
+                anime.title = title
+            if description:
+                anime.description = description
+            if another_title:
+                anime.title_another = another_title
+            if japanese_title:
+                anime.title_japanese = japanese_title
+            if release_date:
+                anime.release_date = release_date
+            if update_date:
+                anime.update_date = update_date
+            if view_count:
+                anime.view_count = view_count
+            if download_count:
+                anime.download_count = download_count
+
+            def create_directory_if_not_exists(directory):
+                if not os.path.exists(directory):
+                    os.makedirs(directory)
+
+            if cover_image:
+                response["cover"] = "cover!"
+                directory = f"{DATA_PATH}{type}\\{title}"
+                create_directory_if_not_exists(directory)
+                cover_image.save(os.path.join(directory, cover_image.filename))
+            else:
+                response["cover"] = "No cover!"
+
+            if files:
+                response["files"] = "files!"
+                for file in files:
+                    response["file"] = "file!"
+                    directory = f"{DATA_PATH}{type}\\{title}"
+                    create_directory_if_not_exists(directory)
+                    file.save(os.path.join(directory, file.filename))
+            else:
+                response["files"] = "No files!"
+        
 class CommentApi(Resource):
     def post(self):
         parser = reqparse.RequestParser()
@@ -275,24 +328,6 @@ class AnimeApi_detail(Resource):
                 }
                 for anime in anime_list
             ]
-
-    def put(self, anime_id):
-        # 更新动漫信息
-        anime = Anime.query.get(anime_id)
-        if anime:
-            data = request.json
-            anime.title = data.get("title", anime.title)
-            anime.description = data.get("description", anime.description)
-            anime.title_another = data.get("title_another", anime.title_another)
-            anime.title_japanese = data.get("title_japanese", anime.title_japanese)
-            anime.release_date = data.get("release_date", anime.release_date)
-            anime.update_date = data.get("update_date", anime.update_date)
-            anime.view_count = data.get("view_count", anime.view_count)
-            anime.download_count = data.get("download_count", anime.download_count)
-            db.session.commit()
-            return {"message": "Anime updated successfully"}
-        else:
-            return {"message": "Anime not found"}, 404
 
     def delete(self, anime_id):
         # 删除动漫信息
