@@ -31,10 +31,13 @@ class Anime(db.Model):
     view_count = db.Column(db.Integer, default=0, nullable=False)
     download_count = db.Column(db.Integer, default=0, nullable=False)
 
+
 class Comment(db.Model):
     __tablename__ = "anime_comment"
     id = db.Column(db.Integer, primary_key=True)
-    anime_id = db.Column(db.Integer, db.ForeignKey('anime.id'), nullable=False)
+    anime_id = db.Column(db.Integer, db.ForeignKey("anime.id"), nullable=False)
     content = db.Column(db.String(4095), nullable=False)
     create_date = db.Column(db.DateTime, nullable=False)
-    anime = db.relationship('Anime', backref=db.backref('comments', lazy='dynamic'))
+    username = db.Column(db.String(255))
+    ip = db.Column(db.String(255))
+    anime = db.relationship("Anime", backref=db.backref("comments", lazy="dynamic"))

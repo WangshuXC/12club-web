@@ -164,22 +164,36 @@ class CommentApi(Resource):
         parser.add_argument(
             "content", type=str, required=True, help="Content is required"
         )
+        parser.add_argument(
+            "username", type=str, required=True, help="Username is required"
+        )
         args = parser.parse_args()
         anime_id = args["anime_id"]
         content = args["content"]
+        username = args["username"]
         create_date = datetime.now()
-        comment = Comment(anime_id=anime_id, content=content, create_date=create_date)
+        userip = request.headers.get("X-Forwarded-For", request.remote_addr)
+        comment = Comment(
+            anime_id=anime_id,
+            content=content,
+            create_date=create_date,
+            username=username,
+            ip=userip,
+        )
         db.session.add(comment)
         db.session.commit()
         return {"message": "Comment added successfully"}, 201
 
-    def get(self, anime_id):
+    def get(self):
+        anime_id = request.args.get("anime_id")
         comments = Comment.query.filter_by(anime_id=anime_id).all()
         result = [
             {
                 "id": comment.id,
                 "content": comment.content,
                 "create_date": comment.create_date.isoformat(),
+                "username": comment.username,
+                "ip": comment.ip,
             }
             for comment in comments
         ]
@@ -275,24 +289,6 @@ class AnimeApi_detail(Resource):
                 }
                 for anime in anime_list
             ]
-
-    def put(self, anime_id):
-        # 更新动漫信息
-        anime = Anime.query.get(anime_id)
-        if anime:
-            data = request.json
-            anime.title = data.get("title", anime.title)
-            anime.description = data.get("description", anime.description)
-            anime.title_another = data.get("title_another", anime.title_another)
-            anime.title_japanese = data.get("title_japanese", anime.title_japanese)
-            anime.release_date = data.get("release_date", anime.release_date)
-            anime.update_date = data.get("update_date", anime.update_date)
-            anime.view_count = data.get("view_count", anime.view_count)
-            anime.download_count = data.get("download_count", anime.download_count)
-            db.session.commit()
-            return {"message": "Anime updated successfully"}
-        else:
-            return {"message": "Anime not found"}, 404
 
     def delete(self, anime_id):
         # 删除动漫信息

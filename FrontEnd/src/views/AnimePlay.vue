@@ -71,13 +71,15 @@
 
                 <div class="reply-box">
                     <div class="reply-box-warp" :style="{ backgroundColor: replyBoxBgColor }">
-                        <textarea class="textarea" ref="textarea" placeholder="天青色等烟雨，评论区在等你" @click="onClickTextarea"
-                            @mouseover="onMouseoverTextarea" @mouseout="onMouseoutTextarea" />
+                        <textarea class="textarea" ref="textarea" placeholder="天青色等烟雨，评论区在等你"
+                            v-model="commentData.content" @click="onClickTextarea" @mouseover="onMouseoverTextarea"
+                            @mouseout="onMouseoutTextarea" />
                     </div>
 
                     <div class="box-expand" :style="{ height: isClickedTextarea ? '32px' : '0' }">
+
                         <div class="send-btn">
-                            <div class="send-text">发布</div>
+                            <div class="send-text" @click="submitComment()">发布</div>
                         </div>
                     </div>
                 </div>
@@ -118,7 +120,7 @@ export default {
             isClickedTextarea: false,
             episode: null,
             currentEpisode: 1,
-            episodeNameList: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+            // episodeNameList: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
             downloadedIndex: [],
             dragging: false,
             isOver: false,
@@ -129,6 +131,10 @@ export default {
             view_count: 6666,
             download_count: 666,
             description: ``,
+            commentData: {
+                username: "",
+                content: "",
+            },
             commentList: [
                 {
                     id: 1,
@@ -149,6 +155,7 @@ export default {
     },
     beforeMount() {
         this.initBangumiData();
+        this.loadComment()
     },
     mounted() {
         // this.initBangumiData();
@@ -235,6 +242,41 @@ export default {
             if (infoElement) {
                 infoElement.style.maxHeight = '100vh';
             }
+        },
+        loadComment() {
+            var currentUrl = window.location.href;
+            var urlParts = currentUrl.split('/');
+            var animeid = urlParts[urlParts.length - 1];
+            axios.get(`${this.API_URL}/comment?anime_id=${animeid}`)
+                .then(response => {
+                    this.commentList = response.data.comments;
+                    console.log(response.data);
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        },
+        submitComment() {
+            var currentUrl = window.location.href;
+            var urlParts = currentUrl.split('/');
+            var animeid = urlParts[urlParts.length - 1];
+            console.log(this.commentData);
+            const formData = new FormData();
+            formData.append('anime_id', parseInt(animeid));
+            formData.append('content', this.commentData.content);
+            formData.append('username', this.commentData.username);
+            axios.post(`${this.API_URL}/comment`, formData, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => {
+                    console.log(response.data);
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+            this.commentData.content = '';
         },
         reduce() {
             this.isExpand = false;
