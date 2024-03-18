@@ -1,15 +1,16 @@
 <template>
-    <div class="ibanner" ref="ibanner">
-        <div class="sub-div-container">
-            <div v-for="(item, index) in iBannerList" :key="index" class="sub-div"
-                :style="{ backgroundImage: `url(${item.background})` }">
+    <v-carousel height="100vh" width="100vw" show-arrows="hover" cycle interval="3000" hide-delimiter-background
+        class="ibanner">
+        <v-carousel-item v-for="(item, i) in iBannerList" :key="i" class="sub-div-container">
+            <div class="sub-div-background" :style="{ 'background-image': 'url(' + item.background + ')' }">
                 <div class="sub-div-info">
                     <h3>{{ item.title }}</h3>
                     <div class="sub-div-info-text">{{ item.info }}</div>
                 </div>
             </div>
-        </div>
-    </div>
+
+        </v-carousel-item>
+    </v-carousel>
     <div class="container-box">
         <div class="container">
             <label for="title">番剧更新</label>
@@ -88,7 +89,6 @@ export default {
         }
     },
     mounted() {
-        this.initIbanner();
         this.setItemsHeight();
 
         window.addEventListener('scroll', this.handleWheel);
@@ -97,28 +97,6 @@ export default {
         window.removeEventListener('scroll', this.handleWheel);
     },
     methods: {
-        initIbanner() {
-            const ibanner = this.$refs.ibanner;
-            const subDivContainer = ibanner.querySelector('.sub-div-container');
-            const ibannerWidth = ibanner.offsetWidth;
-
-            subDivContainer.style.width = `${ibannerWidth * this.iBannerList.length}px`;
-
-            const animate = () => {
-                setTimeout(() => {
-                    subDivContainer.style.transform = `translateX(-${ibannerWidth}px)`;
-                    setTimeout(() => {
-                        subDivContainer.style.transition = 'transform 0s';
-                        this.iBannerList.push(this.iBannerList.shift());
-                        subDivContainer.style.transform = '';
-                        animate();
-                    }, 1000);
-                    subDivContainer.style.transition = 'transform 0.5s ease-out';
-                }, 2000);
-            };
-
-            animate();
-        },
         handleWheel() {
             const container = document.querySelector('.container');
 
@@ -166,55 +144,27 @@ body {
 }
 
 .ibanner {
-    width: 100vw;
-    height: 100vh;
-    position: relative;
-    overflow: hidden;
 
-    .sub-div-container {
-        display: flex;
+    .sub-div-background {
         width: 100%;
         height: 100%;
-        overflow: hidden;
-        transition: transform 0.5s ease;
+        position: relative;
+        background-size: cover;
+        background-position: center;
 
-        .sub-div {
-            position: relative;
-            overflow: hidden;
-            width: 100vw;
-            height: 100vh;
-            color: #ffffff;
-            text-align: center;
-            font-size: 15px;
-            background-size: cover;
-            background-position: center center;
+        .sub-div-info {
+            width: 35vw;
+            height: 35vh;
+            overflow-y: hidden;
+            position: absolute;
+            bottom: 16vh;
+            left: 5vw;
+            padding: 15px;
+            border-radius: 15px;
+            color: black;
+            background-color: #ffffff60;
+            box-shadow: 0 12px 15px 0 rgba(0, 0, 0, 0.24), 0 17px 50px 0 rgba(0, 0, 0, 0.19);
 
-
-
-            .sub-div-info {
-                width: 35vw;
-                height: 35vh;
-                overflow-y: hidden;
-                position: absolute;
-                bottom: 16vh;
-                left: 5vw;
-                padding: 15px;
-                border-radius: 15px;
-                color: black;
-                background-color: #ffffff60;
-                box-shadow: 0 12px 15px 0 rgba(0, 0, 0, 0.24), 0 17px 50px 0 rgba(0, 0, 0, 0.19);
-
-                h3 {
-                    font-size: 50px;
-                    text-overflow: ellipsis;
-                }
-
-                .sub-div-info-text {
-                    margin-bottom: 15px;
-                    height: auto;
-                    text-overflow: ellipsis;
-                }
-            }
         }
     }
 }

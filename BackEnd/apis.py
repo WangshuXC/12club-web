@@ -217,22 +217,36 @@ class CommentApi(Resource):
         parser.add_argument(
             "content", type=str, required=True, help="Content is required"
         )
+        parser.add_argument(
+            "username", type=str, required=True, help="Username is required"
+        )
         args = parser.parse_args()
         anime_id = args["anime_id"]
         content = args["content"]
+        username = args["username"]
         create_date = datetime.now()
-        comment = Comment(anime_id=anime_id, content=content, create_date=create_date)
+        userip = request.headers.get("X-Forwarded-For", request.remote_addr)
+        comment = Comment(
+            anime_id=anime_id,
+            content=content,
+            create_date=create_date,
+            username=username,
+            ip=userip,
+        )
         db.session.add(comment)
         db.session.commit()
         return {"message": "Comment added successfully"}, 201
 
-    def get(self, anime_id):
+    def get(self):
+        anime_id = request.args.get("anime_id")
         comments = Comment.query.filter_by(anime_id=anime_id).all()
         result = [
             {
                 "id": comment.id,
                 "content": comment.content,
                 "create_date": comment.create_date.isoformat(),
+                "username": comment.username,
+                "ip": comment.ip,
             }
             for comment in comments
         ]
