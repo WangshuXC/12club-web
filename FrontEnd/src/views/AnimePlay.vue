@@ -116,7 +116,7 @@ export default {
             coverUrl: '',
             replyBoxBgColor: '#f1f2f3',
             isClickedTextarea: false,
-            episode: 1,
+            episode: null,
             currentEpisode: 1,
             episodeNameList: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
             downloadedIndex: [],
@@ -152,7 +152,6 @@ export default {
     },
     mounted() {
         // this.initBangumiData();
-        // this.initPlayer();
         this.$nextTick(() => {
             var introduction = this.$refs.introductionRef;
             if (introduction.scrollHeight > introduction.clientHeight) {
@@ -291,6 +290,10 @@ export default {
         position: absolute;
         left: 0;
         top: 0;
+
+        #player {
+            max-width: 100%;
+        }
     }
 
     .right-box-container {
