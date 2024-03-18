@@ -131,8 +131,8 @@ export default {
             isOver: false,
             isExpand: false,
             isNeedExpand: false,
-            title: "Title",
-            update_date: "2024-02-06 15:22:38",
+            title: "",
+            update_date: "",
             view_count: 6666,
             download_count: 666,
             description: ``,
@@ -140,15 +140,7 @@ export default {
                 username: "",
                 content: "",
             },
-            commentList: [
-                {
-                    id: 1,
-                    username: "",
-                    ip: "114.514",
-                    content: "为什么要演奏春日影！！！",
-                    time: "2024-02-06 15:22:38",
-                }
-            ],
+            commentList: [],
         };
     },
     beforeMount() {

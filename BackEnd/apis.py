@@ -154,6 +154,7 @@ class UploadApi(Resource):
 
         return response, 201
 
+
 class UpdateApi(Resource):
     def post(self, anime_id):
         anime = Anime.query.get(anime_id)
@@ -191,23 +192,18 @@ class UpdateApi(Resource):
                     os.makedirs(directory)
 
             if cover_image:
-                response["cover"] = "cover!"
                 directory = f"{DATA_PATH}{type}\\{title}"
                 create_directory_if_not_exists(directory)
                 cover_image.save(os.path.join(directory, cover_image.filename))
-            else:
-                response["cover"] = "No cover!"
 
             if files:
-                response["files"] = "files!"
                 for file in files:
-                    response["file"] = "file!"
                     directory = f"{DATA_PATH}{type}\\{title}"
                     create_directory_if_not_exists(directory)
                     file.save(os.path.join(directory, file.filename))
-            else:
-                response["files"] = "No files!"
-        
+                anime.episode_count = anime.episode_count + len(files)
+
+
 class CommentApi(Resource):
     def post(self):
         parser = reqparse.RequestParser()
