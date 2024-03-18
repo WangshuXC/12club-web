@@ -69,18 +69,23 @@
                     </div>
                 </div>
 
-                <div class="reply-box">
+                <div class="reply-box" @click="onClickTextarea">
                     <div class="reply-box-warp" :style="{ backgroundColor: replyBoxBgColor }">
                         <textarea class="textarea" ref="textarea" placeholder="天青色等烟雨，评论区在等你"
-                            v-model="commentData.content" @click="onClickTextarea" @mouseover="onMouseoverTextarea"
+                            v-model="commentData.content" @mouseover="onMouseoverTextarea"
                             @mouseout="onMouseoutTextarea" />
                     </div>
 
-                    <div class="box-expand" :style="{ height: isClickedTextarea ? '32px' : '0' }">
-
-                        <div class="send-btn">
-                            <div class="send-text" @click="submitComment()">发布</div>
+                    <div class="box-expand" :style="{ height: isClickedTextarea ? '80px' : '0' }">
+                        <div class="send-username">
+                            <v-text-field v-model="commentData.username" density="comfortable" label="Username"
+                                variant="underlined" :append-icon="'mdi-send'"
+                                @click:append="submitComment()"></v-text-field>
                         </div>
+
+                        <!-- <div class="send-btn">
+                            <div class="send-text" @click="submitComment()">发布</div>
+                        </div> -->
                     </div>
                 </div>
 
@@ -142,23 +147,16 @@ export default {
                     ip: "114.514",
                     content: "为什么要演奏春日影！！！",
                     time: "2024-02-06 15:22:38",
-                },
-                {
-                    id: 2,
-                    username: "username2",
-                    ip: "666.777",
-                    content: "你只考虑自己",
-                    time: "2024-02-06 15:22:38",
                 }
             ],
         };
     },
     beforeMount() {
+        this.commentData.username = localStorage.getItem('username') || '';
         this.initBangumiData();
-        this.loadComment()
+        this.loadComment();
     },
     mounted() {
-        // this.initBangumiData();
         this.$nextTick(() => {
             var introduction = this.$refs.introductionRef;
             if (introduction.scrollHeight > introduction.clientHeight) {
@@ -250,7 +248,6 @@ export default {
             axios.get(`${this.API_URL}/comment?anime_id=${animeid}`)
                 .then(response => {
                     this.commentList = response.data.comments;
-                    console.log(response.data);
                 })
                 .catch(error => {
                     console.error(error);
@@ -260,18 +257,18 @@ export default {
             var currentUrl = window.location.href;
             var urlParts = currentUrl.split('/');
             var animeid = urlParts[urlParts.length - 1];
-            console.log(this.commentData);
             const formData = new FormData();
             formData.append('anime_id', parseInt(animeid));
             formData.append('content', this.commentData.content);
             formData.append('username', this.commentData.username);
+            localStorage.setItem('username', this.commentData.username);
             axios.post(`${this.API_URL}/comment`, formData, {
                 headers: {
                     'Content-Type': 'application/json'
                 }
             })
-                .then(response => {
-                    console.log(response.data);
+                .then(() => {
+                    this.loadComment();
                 })
                 .catch(error => {
                     console.error(error);
@@ -491,7 +488,7 @@ export default {
                 position: relative;
                 min-height: 48px;
                 transition: .2s;
-                border: 1px solid #E3E5E7;
+                border: 1px solid #9e9e9e;
                 border-radius: 6px;
                 overflow: hidden;
 
@@ -524,10 +521,21 @@ export default {
             }
 
             .box-expand {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: flex-end;
                 width: 100%;
                 height: 0px;
                 margin-top: 2vh;
+                overflow: hidden;
                 transition: all .2s ease-in-out;
+
+                .send-username {
+                    width: 220px;
+                    height: 52px;
+                    margin-right: 20px;
+                }
 
                 .send-btn {
                     float: right;
@@ -536,7 +544,7 @@ export default {
                     align-items: center;
                     position: relative;
                     width: 70px;
-                    height: 100%;
+                    height: 52px;
                     border-radius: 6px;
                     cursor: pointer;
                     background-color: #7fd6f5;

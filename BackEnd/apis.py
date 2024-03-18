@@ -191,7 +191,7 @@ class CommentApi(Resource):
             {
                 "id": comment.id,
                 "content": comment.content,
-                "create_date": comment.create_date.isoformat(),
+                "time": comment.create_date.isoformat().replace("T", " "),
                 "username": comment.username,
                 "ip": comment.ip,
             }
