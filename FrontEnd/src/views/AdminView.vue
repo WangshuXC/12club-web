@@ -1,33 +1,14 @@
 <template>
     <h1>hello administrator</h1>
 
-    <v-card title="Nutrition" flat>
-        <template v-slot:text>
-            <v-text-field v-model="search" label="Search" prepend-inner-icon="mdi-magnify" variant="outlined"
-                hide-details single-line></v-text-field>
-        </template>
-
-        <v-data-table :headers="headers" :items="desserts" :search="search">
-            <template v-slot:item="{ item }">
-                <tr @click="handleItemClick(item)">
-                    <td>{{ item.name }}</td>
-                    <td>{{ item.calories }}</td>
-                    <td>{{ item.fat }}</td>
-                    <td>{{ item.carbs }}</td>
-                    <td>{{ item.protein }}</td>
-                </tr>
-            </template>
-        </v-data-table>
-    </v-card>
-
     <div class="add-container">
         <div class="add-box">
-            <v-btn prepend-icon="mdi-movie" @click="showAddEditor('Anime')" size="x-large"
+            <v-btn prepend-icon="mdi-movie" @click="toggleShow('add', 'Anime')" size="x-large"
                 :color="addForm.type === 'Anime' ? 'blue' : ''">Add Anime</v-btn>
-            <v-btn prepend-icon="mdi-music" @click="showAddEditor('Music')" size="x-large"
+            <v-btn prepend-icon="mdi-music" @click="toggleShow('add', 'Music')" size="x-large"
                 :color="addForm.type === 'Music' ? 'blue' : ''">Add Music</v-btn>
         </div>
-        <div class="add-editor" v-if="showEditor">
+        <div class="add-editor" v-if="showAddEditor">
             <div>
                 <v-img v-if="coverUrl" :src="coverUrl" alt="Cover Image" max-height="20vw"
                     style="margin-bottom: 20px ;" />
@@ -54,15 +35,10 @@
             </v-file-input>
 
             <v-dialog v-model="dialog" max-width="50%" persistent>
-                <template v-slot:activator="{ props: activatorProps }">
-                    <v-btn v-bind="activatorProps" style="width: 50%; margin: auto;" color="success" size="large"
+                <template v-slot:activator="{ props: addActivatorProps }">
+                    <v-btn v-bind="addActivatorProps" style="width: 50%; margin: auto;" color="success" size="large"
                         @click="sortFile()">
                         Add
-                    </v-btn>
-
-                    <v-btn @click="showEditor = false; addForm.type = ''"
-                        style="width: 50%; margin: auto;margin-top: 30px;" color="error" size="large">
-                        Cancel
                     </v-btn>
                 </template>
 
@@ -89,7 +65,92 @@
             </v-dialog>
         </div>
     </div>
-    <div class="edit-container"></div>
+
+    <div class="edit-container">
+        <div class="edit-box">
+            <v-btn prepend-icon="mdi-movie" @click="toggleShow('edit', 'Anime')" size="x-large"
+                :color="editForm.type === 'Anime' ? 'blue' : ''">Edit Anime</v-btn>
+            <v-btn prepend-icon="mdi-music" @click="toggleShow('edit', 'Music')" size="x-large"
+                :color="editForm.type === 'Music' ? 'blue' : ''">Edit Music</v-btn>
+        </div>
+        <div class="edit-editor" v-if="showEditEditor">
+            <v-card flat>
+                <template v-slot:text>
+                    <v-text-field v-model="search" label="Search" prepend-inner-icon="mdi-magnify" variant="outlined"
+                        hide-details single-line></v-text-field>
+                </template>
+
+                <v-data-table :headers="headers" :items="animeList" :search="search">
+                    <template v-slot:item="{ item }">
+                        <tr @click="editItemClick(item)" class="tableItem">
+                            <td>{{ item.title }}</td>
+                            <td>{{ item.title_anothor }}</td>
+                            <td>{{ item.update_date }}</td>
+                            <td>{{ item.release_date }}</td>
+                        </tr>
+                    </template>
+                </v-data-table>
+            </v-card>
+            <div>
+                <v-img :src="coverUrl" alt="Cover Image" max-height="20vw" style="margin-bottom: 20px ;" />
+                <v-file-input accept="image/*" label="Cover" v-model="editForm.coverImage" prepend-icon="mdi-paperclip"
+                    variant="solo-filled" @change="handleFileUpload"></v-file-input>
+                <v-text-field v-model="editForm.title" label="Title" placeholder="输入动漫标题" prepend-icon="mdi-pencil"
+                    variant="solo" clearable></v-text-field>
+                <v-text-field v-if="editForm.type === 'Anime'" v-model="editForm.anotherTitle" label="AnotherTitle"
+                    placeholder="输入动漫别名" prepend-icon="mdi-pencil" variant="solo" clearable></v-text-field>
+                <v-text-field v-if="editForm.type === 'Anime'" v-model="editForm.japaneseTitle" label="japaneseTitle"
+                    placeholder="输入动漫日文标题" prepend-icon="mdi-pencil" variant="solo" clearable></v-text-field>
+                <v-textarea v-model="editForm.description" label="Description" placeholder="输入动漫简介"
+                    prepend-icon="mdi-pencil" variant="solo" clearable></v-textarea>
+            </div>
+            <v-file-input v-model="editForm.editFiles" :show-size="1024" label="File input" placeholder="按住Ctrl再点击实现多选"
+                prepend-icon="mdi-paperclip" variant="solo-filled" counter multiple>
+                <template v-slot:selection="{ fileNames }">
+                    <template v-for="fileName in fileNames" :key="fileName">
+                        <v-chip class="me-2" color="deep-purple-accent-4" size="small" label>
+                            {{ fileName }}
+                        </v-chip>
+                    </template>
+                </template>
+            </v-file-input>
+
+            <v-dialog v-model="dialog" max-width="50%" persistent>
+                <template v-slot:activator="{ props: editActivatorProps }">
+                    <v-btn v-bind="editActivatorProps" style="width: 50%; margin: auto;" color="success" size="large">
+                        Edit
+                    </v-btn>
+
+                    <v-btn @click="deleteItem(this.editForm.id)" style="width: 50%; margin: auto;margin-top: 30px;"
+                        color="error" size="large">
+                        Delete
+                    </v-btn>
+                </template>
+
+                <v-card>
+                    <v-card-title class="text-h4" style="margin: auto;margin-top: 20px;">
+                        aaaa
+                    </v-card-title>
+                    <v-spacer></v-spacer>
+                    <div v-for="(file, index) in editForm.editFiles" :key="index" style="margin: auto;">
+                        {{ file.name }} => {{ index + 1 }}.{{ file.name.split('.').pop() }}
+                        <v-spacer></v-spacer>
+                    </div>
+                    <template v-slot:actions>
+                        <v-spacer></v-spacer>
+
+                        <v-btn @click="dialog = false">
+                            Cancel
+                        </v-btn>
+                        <v-btn @click="dialog = false, this.editUpload()">
+                            I am sure
+                        </v-btn>
+                    </template>
+                </v-card>
+            </v-dialog>
+        </div>
+    </div>
+
 </template>
 
 <script>
@@ -97,7 +158,8 @@ import axios from 'axios';
 export default {
     data() {
         return {
-            showEditor: false,
+            showAddEditor: false,
+            showEditEditor: false,
             addForm: {
                 coverImage: null,
                 title: '',
@@ -113,124 +175,98 @@ export default {
             headers: [
                 {
                     align: 'start',
-                    key: 'name',
-                    sortable: false,
-                    title: 'Dessert (100g serving)',
+                    key: 'title',
+                    sortable: true,
+                    title: '名称',
                 },
-                { key: 'calories', title: 'Calories' },
-                { key: 'fat', title: 'Fat (g)' },
-                { key: 'carbs', title: 'Carbs (g)' },
-                { key: 'protein', title: 'Protein (g)' },
-                { key: 'iron', title: 'Iron (%)' },
+                { key: 'title_anothor', title: '别名' },
+                { key: 'update_date', title: '上传时间' },
+                { key: 'release_date', title: '最近更新时间' },
             ],
-            desserts: [
+            animeList: [
                 {
-                    name: 'Frozen Yogurt',
-                    calories: 159,
-                    fat: 6.0,
-                    carbs: 24,
-                    protein: 4.0,
-                    iron: 1,
-                },
-                {
-                    name: 'Ice cream sandwich',
-                    calories: 237,
-                    fat: 9.0,
-                    carbs: 37,
-                    protein: 4.3,
-                    iron: 1,
-                },
-                {
-                    name: 'Eclair',
-                    calories: 262,
-                    fat: 16.0,
-                    carbs: 23,
-                    protein: 6.0,
-                    iron: 7,
-                },
-                {
-                    name: 'Cupcake',
-                    calories: 305,
-                    fat: 3.7,
-                    carbs: 67,
-                    protein: 4.3,
-                    iron: 8,
-                },
-                {
-                    name: 'Gingerbread',
-                    calories: 356,
-                    fat: 16.0,
-                    carbs: 49,
-                    protein: 3.9,
-                    iron: 16,
-                },
-                {
-                    name: 'Jelly bean',
-                    calories: 375,
-                    fat: 0.0,
-                    carbs: 94,
-                    protein: 0.0,
-                    iron: 0,
-                },
-                {
-                    name: 'Lollipop',
-                    calories: 392,
-                    fat: 0.2,
-                    carbs: 98,
-                    protein: 0,
-                    iron: 2,
-                },
-                {
-                    name: 'Honeycomb',
-                    calories: 408,
-                    fat: 3.2,
-                    carbs: 87,
-                    protein: 6.5,
-                    iron: 45,
-                },
-                {
-                    name: 'Donut',
-                    calories: 452,
-                    fat: 25.0,
-                    carbs: 51,
-                    protein: 4.9,
-                    iron: 22,
-                },
-                {
-                    name: 'KitKat',
-                    calories: 518,
-                    fat: 26.0,
-                    carbs: 65,
-                    protein: 7,
-                    iron: 6,
+                    id: 1,
+                    title: 'Frozen Yogurt',
+                    title_anothor: 'Frozen Yogurt',
+                    update_date: null,
+                    release_date: null,
                 },
             ],
+            editForm: {
+                id: -1,
+                coverImage: null,
+                title: '',
+                anotherTitle: '',
+                japaneseTitle: '',
+                description: '',
+                type: '',
+                addFiles: [],
+            },
         };
     },
     mounted() {
+        this.loadAnimeTable();
     },
     methods: {
+        toggleShow(addOrEdit, type) {
+            if (addOrEdit === 'add') {
+                if (this.showAddEditor === false) {
+                    this.showAdd(type);
+                } else {
+                    this.addForm.type = '';
+                    this.showAddEditor = !this.showAddEditor;
+                }
+            }
+
+            if (addOrEdit === 'edit') {
+                if (this.showEditEditor === false) {
+                    this.showEdit(type)
+                } else {
+                    this.editForm.type = '';
+                    this.showEditEditor = !this.showEditEditor;
+                }
+            }
+
+        },
         handleFileUpload(event) {
             const file = event.target.files[0];
             if (file) {
                 this.coverUrl = URL.createObjectURL(file);
             }
         },
-        showAddEditor(type) {
+        showAdd(type) {
             this.addForm.type = type;
-            this.showEditor = true;
+            this.showAddEditor = true;
+            this.editForm.type = '';
+            this.showEditEditor = false;
+        },
+        showEdit(type) {
+            this.editForm.type = type;
+            this.showEditEditor = true;
+            this.addForm.type = '';
+            this.showAddEditor = false;
         },
         sortFile() {
-            console.log(this.addForm.addFiles);
             this.addForm.addFiles.sort((a, b) => a.name.localeCompare(b.name));
-            console.log('-----------------');
-            console.log(this.addForm.addFiles);
+        },
+        editItemClick(item) {
+            this.editForm.id = item.id;
+            this.editForm.title = item.title;
+            this.editForm.anotherTitle = item.anotherTitle;
+            this.editForm.japaneseTitle = item.japaneseTitle;
+            this.editForm.description = item.description;
+        },
+        deleteItem(id) {
+            const type = this.editForm.type;
+            axios.delete(`${this.API_URL}/delete?id=${id}&type=${type}`)
+                .then(response => {
+                    console.log(response.data);
+                })
+                .catch(error => {
+                    console.error(error.response.data);
+                });
         },
         addUpload() {
-            // this.addForm.addFiles.sort((a, b) => {
-            //     const cleanFileName = (filename) => filename.replace(/\[.*?\]/g, '');
-            //     return cleanFileName(a).localeCompare(cleanFileName(b));
-            // });
             const formData = new FormData();
             formData.append('coverImage', new Blob(this.addForm.coverImage, { type: "image/jpeg" }), "Cover.jpg");
             formData.append('title', this.addForm.title);
@@ -252,7 +288,7 @@ export default {
                     'Content-Type': 'multipart/form-data',
                 }
             })
-                .then(response => {
+                .then(() => {
                     this.showEditor = false;
                     this.coverUrl = null;
                     this.addForm = {
@@ -264,12 +300,21 @@ export default {
                         type: '',
                         addFiles: [],
                     }
-                    console.log(response.data);
                 })
                 .catch(error => {
                     console.error(error);
                 });
-        }
+        },
+        loadAnimeTable() {
+            axios.get(`${this.API_URL}/update`)
+                .then(response => {
+                    this.animeList = response.data;
+                    console.log(this.animeList);
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        },
     },
 };
 </script>
@@ -301,6 +346,39 @@ export default {
         border: 1px solid #ccc;
         border-radius: 5px;
         background-color: #fff;
+    }
+}
+
+.edit-container {
+    display: flex;
+    flex-direction: column;
+    width: 80vw;
+    margin-inline: auto;
+    margin-top: 20px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f5f5f5;
+
+    .edit-box {
+        display: flex;
+        justify-content: space-around;
+        width: 100%;
+        height: auto;
+    }
+
+    .edit-editor {
+        display: flex;
+        flex-direction: column;
+        margin-top: 20px;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: #fff;
+
+        .tableItem:hover {
+            background-color: #ccc;
+        }
     }
 }
 </style>

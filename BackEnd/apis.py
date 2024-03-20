@@ -18,6 +18,7 @@ from settings import db, DATA_PATH
 import math
 from datetime import timedelta, datetime
 import os
+import shutil
 
 
 app = Flask(__name__)
@@ -144,8 +145,8 @@ class UploadApi(Resource):
             description=description,
             title_another=another_title,
             title_japanese=japanese_title,
-            release_date="2021-01-01",
-            update_date="2021-01-01",
+            release_date=datetime.now().isoformat(),
+            update_date=datetime.now().isoformat(),
             view_count=0,
             download_count=0,
         )
@@ -155,8 +156,30 @@ class UploadApi(Resource):
         return response, 201
 
 
+class DeleteApi(Resource):
+    def delete(self):
+        id = request.args.get("id")
+        type = request.args.get("type")
+        print(f"id: {id}, type: {type}")
+        anime = Anime.query.get(id)
+        if anime:
+            title = anime.title
+            directory = f"{DATA_PATH}{type}/{title}"
+            try:
+                shutil.rmtree(directory)
+                db.session.delete(anime)
+                db.session.commit()
+            except OSError as e:
+                print(f"Error deleting directory: {e}")
+
+            return {"message": "Anime deleted successfully"}, 200
+        else:
+            return {"message": "Anime not found", "id": id, "type": type}, 404
+
+
 class UpdateApi(Resource):
-    def post(self, anime_id):
+    def post(self):
+        anime_id = request.form.get("anime_id")
         anime = Anime.query.get(anime_id)
         if anime:
             title = request.form.get("title")
@@ -202,6 +225,26 @@ class UpdateApi(Resource):
                     create_directory_if_not_exists(directory)
                     file.save(os.path.join(directory, file.filename))
                 anime.episode_count = anime.episode_count + len(files)
+
+    def get(self):
+        anime_page_list = Anime.query.order_by(
+            getattr(Anime, "release_date").desc()
+        ).all()
+        anime_count = Anime.query.count()
+        # 将查询结果转换成字典列表
+        results = [
+            {
+                "id": anime.id,
+                "title": anime.title,
+                "anotherTitle": anime.title_another,
+                "japaneseTitle": anime.title_japanese,
+                "description": anime.description,
+                "release_date": anime.release_date.isoformat(),
+                "update_date": anime.update_date.isoformat(),
+            }
+            for anime in anime_page_list
+        ]
+        return results, 200
 
 
 class CommentApi(Resource):

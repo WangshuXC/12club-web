@@ -17,9 +17,11 @@
             <div class="update-box" id="anime">
                 <div v-for="(item, index) in animeList" :key="index" class="update-item">
                     <a :href="'/animeplay/' + item.id" class="update-item-url" :alt="item.title">
-                        <div class="update-item-img"
+                        <!-- <div class="update-item-img"
                             :style="item.cover !== 'NULL' ? { 'background-image': `url(${this.DATA_URL}/anime/` + encodeURIComponent(item.title) + '/' + encodeURIComponent(item.cover) + ')' } : { 'background-image': 'url(http://127.0.0.1:3000/anime/Cover.jpg)' }">
-                        </div>
+                        </div> -->
+                        <img class="update-item-img"
+                            :src="item.cover !== 'NULL' ? `${this.DATA_URL}/anime/` + encodeURIComponent(item.title) + '/Cover.jpg' : `${this.DATA_URL}/anime/Cover.jpg`">
                     </a>
                     <div class="update-item-title">
                         {{ item.title }}
@@ -209,6 +211,7 @@ body {
 
             .update-item {
                 width: 20%;
+                overflow: hidden;
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
@@ -218,11 +221,10 @@ body {
 
                 .update-item-url {
                     width: 90%;
-                    height: 90%;
+                    overflow: hidden;
 
                     .update-item-img {
                         width: 100%;
-                        height: 100%;
                         border-radius: 10px;
                         background-size: cover;
                     }

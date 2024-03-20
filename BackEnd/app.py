@@ -10,8 +10,10 @@ from apis import (
     AnimeApi_page,
     LoginApi,
     SignupApi,
-    UploadApi,
     CommentApi,
+    UploadApi,
+    UpdateApi,
+    DeleteApi,
 )
 from flask_jwt_extended import JWTManager
 
@@ -27,6 +29,8 @@ app.config.from_object(settings)
 api = Api(app)
 db.init_app(app)
 
+api.add_resource(DeleteApi, "/api/delete", "/api/delete/<int:id>", endpoint="delete")
+api.add_resource(UpdateApi, "/api/update", endpoint="update")
 api.add_resource(UploadApi, "/api/upload", endpoint="upload")
 api.add_resource(LoginApi, "/api/login", endpoint="login")
 api.add_resource(SignupApi, "/api/signup", endpoint="signup")
