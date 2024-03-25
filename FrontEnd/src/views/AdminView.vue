@@ -389,12 +389,11 @@ export default {
             for (let i = 0; i < this.editForm.editFiles.length; i++) {
                 const file = this.editForm.editFiles[i];
                 if (file && file !== undefined) {
-                    const blob = new Blob([file], { type: file.type });
-                    // const originalFileExtension = file.name.split('.').pop();
-                    // const fileName = (i + 1) + '.' + originalFileExtension;
-                    // formData.append('editFiles', blob, fileName);
-                    formData.append('editFiles', blob, file.name);
-                    console.log('editFiles:', file);
+                    const blob = new Blob([file], { type: file[0].type });
+                    const originalFileExtension = file[0].name.split('.').pop();
+                    const fileName = i + '.' + originalFileExtension;
+                    formData.append('editFiles', blob, fileName);
+                    console.log('editFiles:', fileName);
                     formData.append('editEpisode', i)
                 }
             }
@@ -402,7 +401,7 @@ export default {
                 const file = this.editForm.addFiles[i];
                 const blob = new Blob([file], { type: file.type });
                 const originalFileExtension = file.name.split('.').pop();
-                const fileName = (i + 1) + '.' + originalFileExtension;
+                const fileName = (this.editForm.episode + i + 1) + '.' + originalFileExtension;
                 formData.append('addFiles', blob, fileName);
                 console.log('addFiles:', fileName);
             }
@@ -413,37 +412,37 @@ export default {
             this.uploadFlag = false;
 
             // 发送 POST 请求
-            // axios.post(`${this.API_URL}/update`, formData, {
-            //     headers: {
-            //         'Content-Type': 'multipart/form-data',
-            //     },
-            //     onUploadProgress: progressEvent => {
-            //         // 计算上传进度
-            //         let percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-            //         // 更新uploadProgress的数值
-            //         this.uploadProgress = percentCompleted;
-            //         console.log(this.uploadProgress);
-            //     }
-            // })
-            //     .then(() => {
-            //         this.showAddEditor = false;
-            //         this.uploadCoverUrl = null;
-            //         this.addForm = {
-            //             coverImage: null,
-            //             title: '',
-            //             anotherTitle: '',
-            //             japaneseTitle: '',
-            //             description: '',
-            //             type: '',
-            //             addFiles: [],
-            //         }
-            //         this.uploadProgress = 0;
-            //         this.uploadDialog = false;
-            //         this.loadAnimeTable();
-            //     })
-            //     .catch(error => {
-            //         console.error(error);
-            //     });
+            axios.post(`${this.API_URL}/update`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+                onUploadProgress: progressEvent => {
+                    // 计算上传进度
+                    let percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                    // 更新uploadProgress的数值
+                    this.uploadProgress = percentCompleted;
+                    console.log(this.uploadProgress);
+                }
+            })
+                .then(() => {
+                    this.showAddEditor = false;
+                    this.uploadCoverUrl = null;
+                    this.addForm = {
+                        coverImage: null,
+                        title: '',
+                        anotherTitle: '',
+                        japaneseTitle: '',
+                        description: '',
+                        type: '',
+                        addFiles: [],
+                    }
+                    this.uploadProgress = 0;
+                    this.uploadDialog = false;
+                    this.loadAnimeTable();
+                })
+                .catch(error => {
+                    console.error(error);
+                });
         },
         loadAnimeTable() {
             axios.get(`${this.API_URL}/update`)
