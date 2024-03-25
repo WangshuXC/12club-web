@@ -23,6 +23,7 @@
                 <v-textarea v-model="addForm.description" label="Description" placeholder="输入动漫简介"
                     prepend-icon="mdi-pencil" variant="solo" clearable></v-textarea>
             </div>
+
             <v-file-input v-model="addForm.addFiles" :show-size="1024" label="File input" placeholder="按住Ctrl再点击实现多选"
                 prepend-icon="mdi-paperclip" variant="solo-filled" counter multiple>
                 <template v-slot:selection="{ fileNames }">
@@ -37,7 +38,7 @@
             <v-dialog v-model="uploadDialog" max-width="50%" persistent>
                 <template v-slot:activator="{ props: addActivatorProps }">
                     <v-btn v-bind="addActivatorProps" style="width: 50%; margin: auto;" color="success" size="large"
-                        @click="sortFile()">
+                        @click="sortFile(this.addForm.addFiles)">
                         Add
                     </v-btn>
                 </template>
@@ -101,7 +102,7 @@
             <v-select v-model="selectedItem" :item-props="itemProps" item-value="id" :items="animeList"
                 label="Selector">
             </v-select>
-            <div>
+            <div v-if="selectedItem">
                 <v-img v-if="selectedItem" :src="`${DATA_URL}/${editForm.type}/${editForm.title}/Cover.jpg`"
                     alt="Cover Image" max-height="20vw" style="margin-bottom: 20px ;" />
                 <v-file-input accept="image/*" label="Update Cover" v-model="editForm.coverImage"
@@ -116,8 +117,15 @@
                 <v-textarea v-model="editForm.description" label="Edit Description" placeholder="输入动漫简介"
                     prepend-icon="mdi-pencil" variant="solo" clearable></v-textarea>
             </div>
-            <v-file-input v-model="editForm.editFiles" :show-size="1024" label="File input" placeholder="按住Ctrl再点击实现多选"
-                prepend-icon="mdi-paperclip" variant="solo-filled" counter multiple>
+
+            <div :style="{ background: '#f5f5f5', padding: '30px', marginBlock: '20px', borderRadius: '10px' }"
+                v-if="selectedItem">
+                <v-file-input :label="'第 ' + item + ' 集'" variant="outlined" v-for="item in editForm.episode"
+                    :key="item" v-model="editForm.editFiles[item]" :show-size="1024"></v-file-input>
+            </div>
+
+            <v-file-input v-model="editForm.addFiles" :show-size="1024" label="新项上传" placeholder="按住Ctrl再点击实现多选"
+                prepend-icon="mdi-paperclip" variant="solo-filled" counter multiple v-if="selectedItem">
                 <template v-slot:selection="{ fileNames }">
                     <template v-for="fileName in fileNames" :key="fileName">
                         <v-chip color="deep-purple-accent-4" size="small" label>
@@ -127,9 +135,10 @@
                 </template>
             </v-file-input>
 
-            <v-dialog v-model="editDialog" max-width="50%" persistent>
+            <v-dialog v-model="editDialog" max-width="50%" persistent v-if="selectedItem">
                 <template v-slot:activator="{ props: editActivatorProps }">
-                    <v-btn v-bind="editActivatorProps" style="width: 50%; margin: auto;" color="success" size="large">
+                    <v-btn v-bind="editActivatorProps" style="width: 50%; margin: auto;" color="success" size="large"
+                        @click="sortFile(this.editForm.addFiles)">
                         Edit
                     </v-btn>
 
@@ -139,13 +148,13 @@
                     </v-btn>
                 </template>
 
-                <v-card>
+                <v-card v-if="editFlag">
                     <v-card-title class="text-h4" style="margin: auto;margin-top: 20px;">
                         确认要更改的内容是否正确
                     </v-card-title>
                     <v-spacer></v-spacer>
-                    <div v-for="(file, index) in editForm.editFiles" :key="index" style="margin: auto;">
-                        {{ file.name }} => {{ index + 1 }}.{{ file.name.split('.').pop() }}
+                    <div v-for="(file, index) in editForm.addFiles" :key="index" style="margin: auto;">
+                        {{ file.name }} => {{ editForm.episode + index + 1 }}.{{ file.name.split('.').pop() }}
                         <v-spacer></v-spacer>
                     </div>
                     <template v-slot:actions>
@@ -154,13 +163,13 @@
                         <v-btn @click="editDialog = false">
                             Cancel
                         </v-btn>
-                        <v-btn @click="editDialog = false, this.editUpload()">
+                        <v-btn @click="editDialog = false, editUpload()">
                             I am sure
                         </v-btn>
                     </template>
                 </v-card>
 
-                <v-card>
+                <v-card v-if="!editFlag">
                     <v-progress-linear color="light-blue" height="10" model-value="uploadProgress"
                         striped></v-progress-linear>
                 </v-card>
@@ -191,6 +200,7 @@ export default {
             uploadDialog: false,
             uploadFlag: true,
             editDialog: false,
+            editFlag: true,
             search: '',
             headers: [
                 {
@@ -221,10 +231,9 @@ export default {
                 japaneseTitle: '',
                 description: '',
                 type: '',
-                editEpisode: [],
                 editFiles: [],
                 addFiles: [],
-                episode: -1,
+                episode: 0,
             },
             uploadProgress: 0,
         };
@@ -283,8 +292,8 @@ export default {
             this.addForm.type = '';
             this.showAddEditor = false;
         },
-        sortFile() {
-            this.addForm.addFiles.sort((a, b) => a.name.localeCompare(b.name));
+        sortFile(list) {
+            list.sort((a, b) => a.name.localeCompare(b.name));
         },
         // editItemClick(item) {
         //     this.editForm.id = item.id;
@@ -301,6 +310,8 @@ export default {
                     this.editForm.anotherTitle = i.anotherTitle;
                     this.editForm.japaneseTitle = i.japaneseTitle;
                     this.editForm.description = i.description;
+                    this.editForm.episode = i.episode;
+                    this.editForm.editFiles = new Array(i.episode).fill(null);
                     break;
                 }
             }
@@ -365,6 +376,74 @@ export default {
                 .catch(error => {
                     console.error(error);
                 });
+        },
+        editUpload() {
+            const formData = new FormData();
+            if (this.editForm.coverImage) formData.append('coverImage', new Blob(this.editForm.coverImage, { type: "image/jpeg" }), "Cover.jpg");
+            formData.append('title', this.editForm.title);
+            formData.append('anotherTitle', this.editForm.anotherTitle);
+            formData.append('japaneseTitle', this.editForm.japaneseTitle);
+            formData.append('description', this.editForm.description);
+            formData.append('type', this.editForm.type);
+
+            for (let i = 0; i < this.editForm.editFiles.length; i++) {
+                const file = this.editForm.editFiles[i];
+                if (file && file !== undefined) {
+                    const blob = new Blob([file], { type: file.type });
+                    // const originalFileExtension = file.name.split('.').pop();
+                    // const fileName = (i + 1) + '.' + originalFileExtension;
+                    // formData.append('editFiles', blob, fileName);
+                    formData.append('editFiles', blob, file.name);
+                    console.log('editFiles:', file);
+                    formData.append('editEpisode', i)
+                }
+            }
+            for (let i = 0; i < this.editForm.addFiles.length; i++) {
+                const file = this.editForm.addFiles[i];
+                const blob = new Blob([file], { type: file.type });
+                const originalFileExtension = file.name.split('.').pop();
+                const fileName = (i + 1) + '.' + originalFileExtension;
+                formData.append('addFiles', blob, fileName);
+                console.log('addFiles:', fileName);
+            }
+            console.log('Printing formData entries:');
+            for (let pair of formData.entries()) {
+                console.log(pair[0] + ': ' + pair[1]);
+            }
+            this.uploadFlag = false;
+
+            // 发送 POST 请求
+            // axios.post(`${this.API_URL}/update`, formData, {
+            //     headers: {
+            //         'Content-Type': 'multipart/form-data',
+            //     },
+            //     onUploadProgress: progressEvent => {
+            //         // 计算上传进度
+            //         let percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            //         // 更新uploadProgress的数值
+            //         this.uploadProgress = percentCompleted;
+            //         console.log(this.uploadProgress);
+            //     }
+            // })
+            //     .then(() => {
+            //         this.showAddEditor = false;
+            //         this.uploadCoverUrl = null;
+            //         this.addForm = {
+            //             coverImage: null,
+            //             title: '',
+            //             anotherTitle: '',
+            //             japaneseTitle: '',
+            //             description: '',
+            //             type: '',
+            //             addFiles: [],
+            //         }
+            //         this.uploadProgress = 0;
+            //         this.uploadDialog = false;
+            //         this.loadAnimeTable();
+            //     })
+            //     .catch(error => {
+            //         console.error(error);
+            //     });
         },
         loadAnimeTable() {
             axios.get(`${this.API_URL}/update`)
