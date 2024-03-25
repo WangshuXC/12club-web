@@ -230,7 +230,6 @@ class UpdateApi(Resource):
         anime_page_list = Anime.query.order_by(
             getattr(Anime, "release_date").desc()
         ).all()
-        anime_count = Anime.query.count()
         # 将查询结果转换成字典列表
         results = [
             {
@@ -241,6 +240,7 @@ class UpdateApi(Resource):
                 "description": anime.description,
                 "release_date": anime.release_date.isoformat(),
                 "update_date": anime.update_date.isoformat(),
+                "episode_count": anime.episode_count,
             }
             for anime in anime_page_list
         ]

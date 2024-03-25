@@ -27,7 +27,7 @@
                 prepend-icon="mdi-paperclip" variant="solo-filled" counter multiple>
                 <template v-slot:selection="{ fileNames }">
                     <template v-for="fileName in fileNames" :key="fileName">
-                        <v-chip class="me-2" color="deep-purple-accent-4" size="small" label>
+                        <v-chip color="deep-purple-accent-4" size="small" label>
                             {{ fileName }}
                         </v-chip>
                     </template>
@@ -120,7 +120,7 @@
                 prepend-icon="mdi-paperclip" variant="solo-filled" counter multiple>
                 <template v-slot:selection="{ fileNames }">
                     <template v-for="fileName in fileNames" :key="fileName">
-                        <v-chip class="me-2" color="deep-purple-accent-4" size="small" label>
+                        <v-chip color="deep-purple-accent-4" size="small" label>
                             {{ fileName }}
                         </v-chip>
                     </template>
@@ -221,7 +221,10 @@ export default {
                 japaneseTitle: '',
                 description: '',
                 type: '',
+                editEpisode: [],
+                editFiles: [],
                 addFiles: [],
+                episode: -1,
             },
             uploadProgress: 0,
         };
