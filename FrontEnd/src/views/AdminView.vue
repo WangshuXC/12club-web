@@ -13,7 +13,7 @@
                 <v-img v-if="uploadCoverUrl" :src="uploadCoverUrl" alt="Cover Image" max-height="20vw"
                     style="margin-bottom: 20px ;" />
                 <v-file-input accept="image/*" label="Cover" v-model="addForm.coverImage" prepend-icon="mdi-paperclip"
-                    variant="solo-filled" @change="uploadCover('upload')"></v-file-input>
+                    variant="solo-filled" @change="uploadCover($event, 'upload')"></v-file-input>
                 <v-text-field v-model="addForm.title" label="Title" placeholder="输入动漫标题" prepend-icon="mdi-pencil"
                     variant="solo" clearable></v-text-field>
                 <v-text-field v-if="addForm.type === 'Anime'" v-model="addForm.anotherTitle" label="AnotherTitle"
@@ -34,7 +34,7 @@
                 </template>
             </v-file-input>
 
-            <v-dialog v-model="dialog" max-width="50%" persistent>
+            <v-dialog v-model="uploadDialog" max-width="50%" persistent>
                 <template v-slot:activator="{ props: addActivatorProps }">
                     <v-btn v-bind="addActivatorProps" style="width: 50%; margin: auto;" color="success" size="large"
                         @click="sortFile()">
@@ -42,7 +42,7 @@
                     </v-btn>
                 </template>
 
-                <v-card>
+                <v-card v-if="uploadFlag">
                     <v-card-title class="text-h4" style="margin: auto;margin-top: 20px;">
                         确认上传文件的顺序
                     </v-card-title>
@@ -54,13 +54,18 @@
                     <template v-slot:actions>
                         <v-spacer></v-spacer>
 
-                        <v-btn @click="dialog = false">
+                        <v-btn @click="uploadDialog = false">
                             Cancel
                         </v-btn>
-                        <v-btn @click="dialog = false, this.addUpload()">
+                        <v-btn @click="this.addUpload()">
                             I am sure
                         </v-btn>
                     </template>
+                </v-card>
+
+                <v-card v-if="!uploadFlag">
+                    <v-progress-linear color="light-blue" height="20" v-model="uploadProgress"
+                        striped></v-progress-linear>
                 </v-card>
             </v-dialog>
         </div>
@@ -122,7 +127,7 @@
                 </template>
             </v-file-input>
 
-            <v-dialog v-model="dialog" max-width="50%" persistent>
+            <v-dialog v-model="editDialog" max-width="50%" persistent>
                 <template v-slot:activator="{ props: editActivatorProps }">
                     <v-btn v-bind="editActivatorProps" style="width: 50%; margin: auto;" color="success" size="large">
                         Edit
@@ -146,33 +151,18 @@
                     <template v-slot:actions>
                         <v-spacer></v-spacer>
 
-                        <v-btn @click="dialog = false">
+                        <v-btn @click="editDialog = false">
                             Cancel
                         </v-btn>
-                        <v-btn @click="dialog = false, this.editUpload()">
+                        <v-btn @click="editDialog = false, this.editUpload()">
                             I am sure
                         </v-btn>
                     </template>
                 </v-card>
-                <v-card>
-                    <v-card-title class="text-h4" style="margin: auto;margin-top: 20px;">
-                        确认要更改的内容是否正确
-                    </v-card-title>
-                    <v-spacer></v-spacer>
-                    <div v-for="(file, index) in editForm.editFiles" :key="index" style="margin: auto;">
-                        {{ file.name }} => {{ index + 1 }}.{{ file.name.split('.').pop() }}
-                        <v-spacer></v-spacer>
-                    </div>
-                    <template v-slot:actions>
-                        <v-spacer></v-spacer>
 
-                        <v-btn @click="dialog = false">
-                            Cancel
-                        </v-btn>
-                        <v-btn @click="dialog = false, this.editUpload()">
-                            I am sure
-                        </v-btn>
-                    </template>
+                <v-card>
+                    <v-progress-linear color="light-blue" height="10" model-value="uploadProgress"
+                        striped></v-progress-linear>
                 </v-card>
             </v-dialog>
         </div>
@@ -198,7 +188,9 @@ export default {
             },
             uploadCoverUrl: null,
             editCoverUrl: null,
-            dialog: false,
+            uploadDialog: false,
+            uploadFlag: true,
+            editDialog: false,
             search: '',
             headers: [
                 {
@@ -231,6 +223,7 @@ export default {
                 type: '',
                 addFiles: [],
             },
+            uploadProgress: 0,
         };
     },
     watch: {
@@ -271,7 +264,7 @@ export default {
         uploadCover(event, type) {
             const file = event.target.files[0];
             if (file) {
-                if (type === 'upload') this.coverUrl = URL.createObjectURL(file);
+                if (type === 'upload') this.uploadCoverUrl = URL.createObjectURL(file);
                 if (type === 'edit') this.uploadCoverUrl = URL.createObjectURL(file);
             }
         },
@@ -335,15 +328,24 @@ export default {
                 formData.append('files', blob, fileName);
             }
 
+            this.uploadFlag = false;
+
             // 发送 POST 请求
             axios.post(`${this.API_URL}/upload`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
+                },
+                onUploadProgress: progressEvent => {
+                    // 计算上传进度
+                    let percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                    // 更新uploadProgress的数值
+                    this.uploadProgress = percentCompleted;
+                    console.log(this.uploadProgress);
                 }
             })
                 .then(() => {
-                    this.showEditor = false;
-                    this.coverUrl = null;
+                    this.showAddEditor = false;
+                    this.uploadCoverUrl = null;
                     this.addForm = {
                         coverImage: null,
                         title: '',
@@ -353,6 +355,9 @@ export default {
                         type: '',
                         addFiles: [],
                     }
+                    this.uploadProgress = 0;
+                    this.uploadDialog = false;
+                    this.loadAnimeTable();
                 })
                 .catch(error => {
                     console.error(error);
