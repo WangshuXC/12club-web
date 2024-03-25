@@ -10,10 +10,10 @@
         </div>
         <div class="add-editor" v-if="showAddEditor">
             <div>
-                <v-img v-if="coverUrl" :src="coverUrl" alt="Cover Image" max-height="20vw"
+                <v-img v-if="uploadCoverUrl" :src="uploadCoverUrl" alt="Cover Image" max-height="20vw"
                     style="margin-bottom: 20px ;" />
                 <v-file-input accept="image/*" label="Cover" v-model="addForm.coverImage" prepend-icon="mdi-paperclip"
-                    variant="solo-filled" @change="handleFileUpload"></v-file-input>
+                    variant="solo-filled" @change="uploadCover('upload')"></v-file-input>
                 <v-text-field v-model="addForm.title" label="Title" placeholder="输入动漫标题" prepend-icon="mdi-pencil"
                     variant="solo" clearable></v-text-field>
                 <v-text-field v-if="addForm.type === 'Anime'" v-model="addForm.anotherTitle" label="AnotherTitle"
@@ -44,7 +44,7 @@
 
                 <v-card>
                     <v-card-title class="text-h4" style="margin: auto;margin-top: 20px;">
-                        Make sure your file-list's order is right
+                        确认上传文件的顺序
                     </v-card-title>
                     <v-spacer></v-spacer>
                     <div v-for="(file, index) in addForm.addFiles" :key="index" style="margin: auto;">
@@ -74,7 +74,8 @@
                 :color="editForm.type === 'Music' ? 'blue' : ''">Edit Music</v-btn>
         </div>
         <div class="edit-editor" v-if="showEditEditor">
-            <v-card flat>
+            <!-- 表格 -->
+            <!-- <v-card flat>
                 <template v-slot:text>
                     <v-text-field v-model="search" label="Search" prepend-inner-icon="mdi-magnify" variant="outlined"
                         hide-details single-line></v-text-field>
@@ -90,18 +91,24 @@
                         </tr>
                     </template>
                 </v-data-table>
-            </v-card>
+            </v-card> -->
+            <!-- 表格 -->
+            <v-select v-model="selectedItem" :item-props="itemProps" item-value="id" :items="animeList"
+                label="Selector">
+            </v-select>
             <div>
-                <v-img :src="coverUrl" alt="Cover Image" max-height="20vw" style="margin-bottom: 20px ;" />
-                <v-file-input accept="image/*" label="Cover" v-model="editForm.coverImage" prepend-icon="mdi-paperclip"
-                    variant="solo-filled" @change="handleFileUpload"></v-file-input>
-                <v-text-field v-model="editForm.title" label="Title" placeholder="输入动漫标题" prepend-icon="mdi-pencil"
+                <v-img v-if="selectedItem" :src="`${DATA_URL}/${editForm.type}/${editForm.title}/Cover.jpg`"
+                    alt="Cover Image" max-height="20vw" style="margin-bottom: 20px ;" />
+                <v-file-input accept="image/*" label="Update Cover" v-model="editForm.coverImage"
+                    prepend-icon="mdi-paperclip" variant="solo-filled" @change="uploadCover"></v-file-input>
+                <v-text-field v-model="editForm.title" label="Edit Title" placeholder="输入动漫标题" prepend-icon="mdi-pencil"
                     variant="solo" clearable></v-text-field>
-                <v-text-field v-if="editForm.type === 'Anime'" v-model="editForm.anotherTitle" label="AnotherTitle"
+                <v-text-field v-if="editForm.type === 'Anime'" v-model="editForm.anotherTitle" label="Edit AnotherTitle"
                     placeholder="输入动漫别名" prepend-icon="mdi-pencil" variant="solo" clearable></v-text-field>
-                <v-text-field v-if="editForm.type === 'Anime'" v-model="editForm.japaneseTitle" label="japaneseTitle"
-                    placeholder="输入动漫日文标题" prepend-icon="mdi-pencil" variant="solo" clearable></v-text-field>
-                <v-textarea v-model="editForm.description" label="Description" placeholder="输入动漫简介"
+                <v-text-field v-if="editForm.type === 'Anime'" v-model="editForm.japaneseTitle"
+                    label="Edit JapaneseTitle" placeholder="输入动漫日文标题" prepend-icon="mdi-pencil" variant="solo"
+                    clearable></v-text-field>
+                <v-textarea v-model="editForm.description" label="Edit Description" placeholder="输入动漫简介"
                     prepend-icon="mdi-pencil" variant="solo" clearable></v-textarea>
             </div>
             <v-file-input v-model="editForm.editFiles" :show-size="1024" label="File input" placeholder="按住Ctrl再点击实现多选"
@@ -129,7 +136,27 @@
 
                 <v-card>
                     <v-card-title class="text-h4" style="margin: auto;margin-top: 20px;">
-                        aaaa
+                        确认要更改的内容是否正确
+                    </v-card-title>
+                    <v-spacer></v-spacer>
+                    <div v-for="(file, index) in editForm.editFiles" :key="index" style="margin: auto;">
+                        {{ file.name }} => {{ index + 1 }}.{{ file.name.split('.').pop() }}
+                        <v-spacer></v-spacer>
+                    </div>
+                    <template v-slot:actions>
+                        <v-spacer></v-spacer>
+
+                        <v-btn @click="dialog = false">
+                            Cancel
+                        </v-btn>
+                        <v-btn @click="dialog = false, this.editUpload()">
+                            I am sure
+                        </v-btn>
+                    </template>
+                </v-card>
+                <v-card>
+                    <v-card-title class="text-h4" style="margin: auto;margin-top: 20px;">
+                        确认要更改的内容是否正确
                     </v-card-title>
                     <v-spacer></v-spacer>
                     <div v-for="(file, index) in editForm.editFiles" :key="index" style="margin: auto;">
@@ -169,7 +196,8 @@ export default {
                 type: '',
                 addFiles: [],
             },
-            coverUrl: null,
+            uploadCoverUrl: null,
+            editCoverUrl: null,
             dialog: false,
             search: '',
             headers: [
@@ -192,6 +220,7 @@ export default {
                     release_date: null,
                 },
             ],
+            selectedItem: null,
             editForm: {
                 id: -1,
                 coverImage: null,
@@ -204,10 +233,21 @@ export default {
             },
         };
     },
+    watch: {
+        selectedItem(newVal) {
+            this.selectItem(newVal);
+        },
+    },
     mounted() {
         this.loadAnimeTable();
     },
     methods: {
+        itemProps(item) {
+            return {
+                title: item.title,
+                subtitle: item.update_date,
+            }
+        },
         toggleShow(addOrEdit, type) {
             if (addOrEdit === 'add') {
                 if (this.showAddEditor === false) {
@@ -228,10 +268,11 @@ export default {
             }
 
         },
-        handleFileUpload(event) {
+        uploadCover(event, type) {
             const file = event.target.files[0];
             if (file) {
-                this.coverUrl = URL.createObjectURL(file);
+                if (type === 'upload') this.coverUrl = URL.createObjectURL(file);
+                if (type === 'edit') this.uploadCoverUrl = URL.createObjectURL(file);
             }
         },
         showAdd(type) {
@@ -249,12 +290,24 @@ export default {
         sortFile() {
             this.addForm.addFiles.sort((a, b) => a.name.localeCompare(b.name));
         },
-        editItemClick(item) {
-            this.editForm.id = item.id;
-            this.editForm.title = item.title;
-            this.editForm.anotherTitle = item.anotherTitle;
-            this.editForm.japaneseTitle = item.japaneseTitle;
-            this.editForm.description = item.description;
+        // editItemClick(item) {
+        //     this.editForm.id = item.id;
+        //     this.editForm.title = item.title;
+        //     this.editForm.anotherTitle = item.anotherTitle;
+        //     this.editForm.japaneseTitle = item.japaneseTitle;
+        //     this.editForm.description = item.description;
+        // },
+        selectItem(item) {
+            for (const i of this.animeList) {
+                if (i.id === item) {
+                    this.editForm.id = item;
+                    this.editForm.title = i.title;
+                    this.editForm.anotherTitle = i.anotherTitle;
+                    this.editForm.japaneseTitle = i.japaneseTitle;
+                    this.editForm.description = i.description;
+                    break;
+                }
+            }
         },
         deleteItem(id) {
             const type = this.editForm.type;
@@ -309,7 +362,6 @@ export default {
             axios.get(`${this.API_URL}/update`)
                 .then(response => {
                     this.animeList = response.data;
-                    console.log(this.animeList);
                 })
                 .catch(error => {
                     console.error(error);
