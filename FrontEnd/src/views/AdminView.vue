@@ -390,7 +390,7 @@ export default {
             for (let i = 0; i < this.editForm.editFiles.length; i++) {
                 const file = this.editForm.editFiles[i];
                 if (file && file !== undefined) {
-                    const blob = new Blob([file], { type: file[0].type });
+                    const blob = new Blob([file[0]], { type: file[0].type });
                     const originalFileExtension = file[0].name.split('.').pop();
                     const fileName = i + '.' + originalFileExtension;
                     formData.append('editFiles', blob, fileName);
