@@ -179,36 +179,22 @@ class DeleteApi(Resource):
 
 class UpdateApi(Resource):
     def post(self):
-        anime_id = request.form.get("anime_id")
+        anime_id = request.form.get("id")
         anime = Anime.query.get(anime_id)
         if anime:
             title = request.form.get("title")
             description = request.form.get("description")
             another_title = request.form.get("anotherTitle")
             japanese_title = request.form.get("japaneseTitle")
-            release_date = request.form.get("releaseDate")
-            update_date = request.form.get("updateDate")
-            view_count = request.form.get("viewCount")
-            download_count = request.form.get("downloadCount")
+            type = request.form.get("type")
             cover_image = request.files.get("coverImage")
-            files = request.files.getlist("files")
+            edit_files = request.files.getlist("editFiles")
+            add_files = request.files.getlist("addFiles")
 
-            if title:
-                anime.title = title
-            if description:
-                anime.description = description
-            if another_title:
-                anime.title_another = another_title
-            if japanese_title:
-                anime.title_japanese = japanese_title
-            if release_date:
-                anime.release_date = release_date
-            if update_date:
-                anime.update_date = update_date
-            if view_count:
-                anime.view_count = view_count
-            if download_count:
-                anime.download_count = download_count
+            anime.title = title
+            anime.description = description
+            anime.title_another = another_title
+            anime.title_japanese = japanese_title
 
             def create_directory_if_not_exists(directory):
                 if not os.path.exists(directory):
@@ -217,14 +203,31 @@ class UpdateApi(Resource):
             if cover_image:
                 directory = f"{DATA_PATH}{type}\\{title}"
                 create_directory_if_not_exists(directory)
-                cover_image.save(os.path.join(directory, cover_image.filename))
+                cover_image_path = os.path.join(directory, "Cover.jpg")
 
-            if files:
-                for file in files:
+                if os.path.exists(cover_image_path):
+                    os.remove(cover_image_path)
+
+                cover_image.save(cover_image_path)
+
+            if edit_files:
+                for file in edit_files:
                     directory = f"{DATA_PATH}{type}\\{title}"
                     create_directory_if_not_exists(directory)
                     file.save(os.path.join(directory, file.filename))
-                anime.episode_count = anime.episode_count + len(files)
+
+            if add_files:
+                for file in add_files:
+                    directory = f"{DATA_PATH}{type}\\{title}"
+                    create_directory_if_not_exists(directory)
+                    file.save(os.path.join(directory, file.filename))
+                anime.episode_count += len(add_files)
+                
+            db.session.commit()
+
+
+
+                    
 
     def get(self):
         anime_page_list = Anime.query.order_by(
@@ -245,6 +248,7 @@ class UpdateApi(Resource):
             for anime in anime_page_list
         ]
         return results, 200
+
 
 
 class CommentApi(Resource):

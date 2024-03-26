@@ -380,6 +380,7 @@ export default {
         editUpload() {
             const formData = new FormData();
             if (this.editForm.coverImage) formData.append('coverImage', new Blob(this.editForm.coverImage, { type: "image/jpeg" }), "Cover.jpg");
+            formData.append('id', this.editForm.id);
             formData.append('title', this.editForm.title);
             formData.append('anotherTitle', this.editForm.anotherTitle);
             formData.append('japaneseTitle', this.editForm.japaneseTitle);
