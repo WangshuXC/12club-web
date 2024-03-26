@@ -76,24 +76,13 @@ const router = createRouter({
         showNavBar: false,
       },
       beforeEnter: (to, from, next) => {
-        const access_token = getCookie('access_token_cookie');
-        const refresh_token = getCookie('refresh_token_cookie');
-
-        if (!access_token || !refresh_token) {
-          // 如果没有 access_token 或 refresh_token，重定向到 /admin 页面
-          next('/admin');
-        } else {
-          // 如果有 access_token 和 refresh_token，则允许进入 admin/op 页面
+        if (from.path === '/admin') {
           next();
+        } else {
+          next('/admin');
         }
       },
     }
   ]
 })
 export default router
-
-function getCookie(name) {
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop().split(';').shift();
-}
