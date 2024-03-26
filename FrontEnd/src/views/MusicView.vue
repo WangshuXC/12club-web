@@ -28,7 +28,8 @@
             </div>
             <div class="music-bar-control">
                 <div class="slider">
-                    <button @click="mode_toggle" class="modeBtn"><font-awesome-icon :icon="['fas', 'shuffle']" /></button>
+                    <button @click="mode_toggle" class="modeBtn"><font-awesome-icon
+                            :icon="['fas', 'shuffle']" /></button>
                     <button @click="volume_toggle"><font-awesome-icon
                             :icon="isXmark ? ['fas', 'volume-xmark'] : ['fas', 'volume-high']" /></button>
                 </div>
@@ -61,7 +62,8 @@
                     <strong>{{ totalTime }}</strong>
                 </div>
                 <div class="switch">
-                    <button @click="mode_toggle" class="modeBtn"><font-awesome-icon :icon="['fas', 'shuffle']" /></button>
+                    <button @click="mode_toggle" class="modeBtn"><font-awesome-icon
+                            :icon="['fas', 'shuffle']" /></button>
                     <button @click="prev" class="sw"><font-awesome-icon :icon="['fas', 'step-backward']" /></button>
                     <button @click="toggle" class="play"><font-awesome-icon
                             :icon="isPlaying ? ['fas', 'pause'] : ['fas', 'play']" /></button>
@@ -98,7 +100,7 @@ export default {
             prevVolume: 100,
             progress: 0,
             thumbSize: 0,
-            audioSrc: `http://data.liangxiaochu.xyz/music/%E4%B8%8D%E7%9C%A0%E4%B9%8B%E5%A4%9C/%E4%B8%8D%E7%9C%A0%E4%B9%8B%E5%A4%9C.mp3`,
+            audioSrc: null,
             audioElement: null,
             title: '不眠之夜',
             author: '张杰/HOYO-MiX',
@@ -112,6 +114,9 @@ export default {
     },
     components: {
         FontAwesomeIcon,
+    },
+    created() {
+        this.audioSrc = `${this.DATA_URL}/Music/不眠之夜/不眠之夜.mp3`;
     },
     mounted() {
         this.parseLRC();

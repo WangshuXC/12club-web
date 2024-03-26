@@ -5,6 +5,7 @@ import settings
 from settings import db
 from apis import (
     HomeApi,
+    IndexApi,
     UserApi,
     AnimeApi_detail,
     AnimeApi_page,
@@ -34,6 +35,7 @@ api.add_resource(UpdateApi, "/api/update", endpoint="update")
 api.add_resource(UploadApi, "/api/upload", endpoint="upload")
 api.add_resource(LoginApi, "/api/login", endpoint="login")
 api.add_resource(SignupApi, "/api/signup", endpoint="signup")
+api.add_resource(IndexApi, "/api/index", endpoint="index")
 api.add_resource(HomeApi, "/api")
 api.add_resource(
     AnimeApi_detail, "/api/anime", "/api/anime/<int:anime_id>", endpoint="anime"

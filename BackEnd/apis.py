@@ -24,7 +24,7 @@ import shutil
 app = Flask(__name__)
 
 # Setup the Flask-JWT-Extended
-app.config["JWT_SECRET_KEY"] = "12345678"
+app.config["JWT_SECRET_KEY"] = "12club@admin"
 jwt = JWTManager(app)
 
 
@@ -222,12 +222,8 @@ class UpdateApi(Resource):
                     create_directory_if_not_exists(directory)
                     file.save(os.path.join(directory, file.filename))
                 anime.episode_count += len(add_files)
-                
+
             db.session.commit()
-
-
-
-                    
 
     def get(self):
         anime_page_list = Anime.query.order_by(
@@ -248,7 +244,6 @@ class UpdateApi(Resource):
             for anime in anime_page_list
         ]
         return results, 200
-
 
 
 class CommentApi(Resource):
@@ -300,6 +295,21 @@ class CommentApi(Resource):
 class HomeApi(Resource):
     def get(self):
         return {"message": "Hello, World!"}
+
+
+class IndexApi(Resource):
+    def get(self):
+        anime_page_list = (
+            Anime.query.order_by(getattr(Anime, "update_date").desc()).limit(5).all()
+        )
+        results = [
+            {
+                "id": anime.id,
+                "title": anime.title,
+            }
+            for anime in anime_page_list
+        ]
+        return results, 200
 
 
 class AnimeApi_page(Resource):

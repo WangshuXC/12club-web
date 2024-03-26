@@ -17,11 +17,8 @@
             <div class="update-box" id="anime">
                 <div v-for="(item, index) in animeList" :key="index" class="update-item">
                     <a :href="'/animeplay/' + item.id" class="update-item-url" :alt="item.title">
-                        <!-- <div class="update-item-img"
-                            :style="item.cover !== 'NULL' ? { 'background-image': `url(${this.DATA_URL}/anime/` + encodeURIComponent(item.title) + '/' + encodeURIComponent(item.cover) + ')' } : { 'background-image': 'url(http://127.0.0.1:3000/anime/Cover.jpg)' }">
-                        </div> -->
                         <img class="update-item-img"
-                            :src="item.cover !== 'NULL' ? `${this.DATA_URL}/anime/` + encodeURIComponent(item.title) + '/Cover.jpg' : `${this.DATA_URL}/anime/Cover.jpg`">
+                            :src="`${this.DATA_URL}/anime/${encodeURIComponent(item.title)}/Cover.jpg`">
                     </a>
                     <div class="update-item-title">
                         {{ item.title }}
@@ -35,16 +32,17 @@
 
             <label for="title">小说更新</label>
             <div class="update-box" id="novel">
-            </div> -->
+            </div>
 
             <label for="title">音乐更新</label>
             <div class="update-box" id="music">
-            </div>
+            </div> -->
         </div>
     </div>
 </template>
 
 <script>
+import axios from 'axios';
 export default {
     data() {
         return {
@@ -55,38 +53,7 @@ export default {
                 { title: 'Item 4', info: 'bvbbbbbbbbbbbbbbb', background: 'https://cdnimg.gamekee.com/wiki2.0/images/w_1600/h_1124/829/287349/2023/4/9/138165.jpg' },
                 { title: 'Item 5', info: 'bbbbbbbbbbbbbbbbbb', background: 'https://cdnimg.gamekee.com/wiki2.0/images/w_1600/h_1124/829/287349/2023/4/9/793597.jpg' }
             ],
-            animeList: [
-                {
-                    "id": 15,
-                    "title": "小林家的龙女仆",
-                    "cover": "Cover.jpg"
-                },
-                {
-                    "id": 14,
-                    "title": "紫罗兰永恒花园",
-                    "cover": "Cover.jpg"
-                },
-                {
-                    "id": 22,
-                    "title": "青春猪头少年不会梦到兔女郎学姐",
-                    "cover": "Cover.jpg"
-                },
-                {
-                    "id": 40,
-                    "title": "五等分的新娘",
-                    "cover": "Cover.jpg"
-                },
-                {
-                    "id": 8,
-                    "title": "咒术回战",
-                    "cover": "Cover.jpg"
-                },
-                {
-                    "id": 36,
-                    "title": "总之就是非常可爱",
-                    "cover": "Cover.jpg"
-                },
-            ],
+            animeList: [],
             prevScrollY: 0,
         }
     },
@@ -96,9 +63,20 @@ export default {
         window.addEventListener('scroll', this.handleWheel);
     },
     beforeMount() {
+        this.loadUpdateData();
         window.removeEventListener('scroll', this.handleWheel);
     },
     methods: {
+        loadUpdateData() {
+            axios.get(`${this.API_URL}/index`)
+                .then(response => {
+                    this.animeList = response.data;
+                    console.log(response.data)
+                })
+                .catch(error => {
+                    console.error("There was an error fetching the anime data:", error);
+                });
+        },
         handleWheel() {
             const container = document.querySelector('.container');
 
@@ -203,7 +181,6 @@ body {
             flex-direction: row;
             justify-content: space-between;
 
-            /* background-color: aqua; */
             width: 95%;
             height: auto;
 
@@ -221,10 +198,12 @@ body {
 
                 .update-item-url {
                     width: 90%;
+                    height: 90%;
                     overflow: hidden;
 
                     .update-item-img {
                         width: 100%;
+                        height: 100%;
                         border-radius: 10px;
                         background-size: cover;
                     }
